@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\userRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,17 +13,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('establishments', function (Blueprint $table) {
-            $table->id();
-            $table->string('nameEtablishment');
-            $table->string('latitude');
-            $table->string('longitude');
-            $table->string('address');
-            $table->string('pos')->nullable();
-            $table->number('numberPos')->max(12)->nullable();
+        Schema::create('user_role_tabs', function (Blueprint $table) {
+            $table->id();            
             $table->foreignIdFor(User::class)
                 ->references('id')
                 ->on('users');
+            $table->foreignIdFor(userRole::class)
+                ->references('id')
+                ->on('user_roles');
             $table->timestamps();
         });
     }
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('establishments');
+        Schema::dropIfExists('user_role_tabs');
     }
 };

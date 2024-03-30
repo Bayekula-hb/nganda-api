@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\drink;
+use App\Models\establishment;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +17,12 @@ return new class extends Migration
             $table->id();
             $table->number('quantity')->nullable(false);
             $table->number('price')->nullable(false);
+            $table->foreignIdFor(drink::class)
+                ->references('id')
+                ->on('drinks');
+            $table->foreignIdFor(establishment::class)
+                ->references('id')
+                ->on('establishment');
             $table->timestamps();
         });
     }

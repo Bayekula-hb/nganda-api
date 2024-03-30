@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class drink extends Model
 {
@@ -17,5 +18,10 @@ class drink extends Model
     protected $fillable = [
         'nameDrink',
     ];
+
+    public function inventoryDrink(): HasMany
+    {
+        return $this->hasMany(inventoryDrink::class, 'inventory_drinks');
+    }
 
 }
