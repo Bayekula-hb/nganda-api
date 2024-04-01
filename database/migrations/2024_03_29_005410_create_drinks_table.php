@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('drinks', function (Blueprint $table) {
             $table->id();
             $table->string('nameDrink');
+            $table->string('imageDrink');
+            $table->string('typeDrink');
             $table->timestamps();
         });
     }

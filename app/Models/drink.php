@@ -17,6 +17,8 @@ class drink extends Model
      */
     protected $fillable = [
         'nameDrink',
+        'imageDrink',
+        'typeDrink',
     ];
 
     public function inventoryDrink(): HasMany

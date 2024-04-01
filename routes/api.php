@@ -10,7 +10,7 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/', function (Request $request){
     return response()->json([
-        'message' => 'Bienvenu sur l\'api de Raiden Express Solution',
+        'message' => 'Bienvenu sur l\'api de Ndanga',
         'version' => 'C\'est la version beta de cet API merci',
         'Developpeur' => 'Developper par hobedbayekula@gmail.com',
     ]);

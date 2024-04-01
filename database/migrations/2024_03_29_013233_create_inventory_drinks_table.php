@@ -15,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('inventory_drinks', function (Blueprint $table) {
             $table->id();
-            $table->number('quantity')->nullable(false);
-            $table->number('price')->nullable(false);
+            $table->integer('quantity')->nullable(false);
+            $table->double('price')->nullable(false);
             $table->foreignIdFor(drink::class)
                 ->references('id')
                 ->on('drinks');
             $table->foreignIdFor(establishment::class)
                 ->references('id')
-                ->on('establishment');
+                ->on('establishments');
             $table->timestamps();
         });
     }

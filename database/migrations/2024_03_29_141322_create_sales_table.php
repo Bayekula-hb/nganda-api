@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('quantity');            
+            $table->integer('quantity');            
             $table->foreignIdFor(User::class)
                 ->references('id')
                 ->on('users');
