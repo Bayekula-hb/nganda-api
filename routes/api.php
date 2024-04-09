@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
 use App\Http\Middleware\signMiddleware;
+use App\Http\Middleware\userLoginMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,9 +24,21 @@ Route::get('/', function (Request $request){
 
 Route::prefix('v1')->group(function () {
 
+    //Singup
     Route::post('/singup', [signController::class, 'singup'])->middleware(signMiddleware::class);
 
-    Route::prefix('/user')->group(function () {        
-        Route::get("", [userController::class, 'index']);
+    //Auth
+    Route::post('/auth/login', [userController::class, 'auth'])->middleware(userLoginMiddleware::class);
+
+
+    Route::prefix('')->middleware(['cors'])->group(function () {
+
+        Route::prefix('/user')->group(function () {        
+            Route::get("", [userController::class, 'index']);
+        });
     });
+
+
+    
+
 });

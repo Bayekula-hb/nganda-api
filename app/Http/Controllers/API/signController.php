@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\establishment;
 use App\Models\User;
+use App\Models\userRole;
 use App\Models\userRoleTab;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,6 +60,22 @@ class signController extends Controller
                     'user_id' => $user->id,
                 ]);
 
+                $token = $user->createToken($user->id);
+
+                $userRoles = userRoleTab::where('user_id', $user->id)->get();
+                $userRoleTab = [];
+
+                foreach($userRoles as $role){
+                    $userRole = userRole::where('id', $role->user_role_id)->first();
+                    if($userRole){
+                        $userRoleObject = (object) [
+                            'nameRole' => $userRole->nameRole,
+                            'id' => $userRole->id,
+                        ];
+                        array_push($userRoleTab, $userRoleObject );
+                    }
+                };
+
                 DB::commit();
                 // On retourne les informations du nouvel utilisateur en JSON
                 return response()->json([
@@ -66,7 +83,9 @@ class signController extends Controller
                     'message'=> 'User created & establishment are created with successfully', 
                     'data' => [
                         "user" => $user,
-                        "establishment" => $establishment
+                        "establishment" => $establishment,
+                        "token" => $token->plainTextToken,
+                        "userRoles" => $userRoleTab,
                     ]
                 ], 200); 
 
