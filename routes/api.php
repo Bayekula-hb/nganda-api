@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
+use App\Http\Controllers\API\userRoleController;
 use App\Http\Middleware\signMiddleware;
 use App\Http\Middleware\userLoginMiddleware;
 use Illuminate\Http\Request;
@@ -30,12 +31,16 @@ Route::prefix('v1')->group(function () {
     //Auth
     Route::post('/auth/login', [userController::class, 'auth'])->middleware(userLoginMiddleware::class);
 
+    //Roles
+    Route::get('/userRoles', [userRoleController::class, 'index']);
 
-    Route::prefix('')->middleware(['cors'])->group(function () {
+
+    Route::prefix('')->group(function () {
 
         Route::prefix('/user')->group(function () {        
             Route::get("", [userController::class, 'index']);
         });
+
     });
 
 
