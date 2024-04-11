@@ -44,6 +44,124 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
+        DB::table('drinks')->insert([
+            [
+                "nameDrink" => "Beaufort",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Skol",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Heineken",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Primus",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Legend",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Savana",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Leffe",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Castel beer",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Tembo",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Nkoy",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Class",
+                "imageDrink" => "",
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Turbo",
+                "imageDrink" => "",
+                "typeDrink" => "Bière brune",
+            ],
+            [
+                "nameDrink" => "Legende",
+                "imageDrink" => "",
+                "typeDrink" => "Bière brune",
+            ],
+            [
+                "nameDrink" => "Doppel",
+                "imageDrink" => "",
+                "typeDrink" => "Bière brune",
+            ],
+            [
+                "nameDrink" => "XXL",
+                "imageDrink" => "",
+                "typeDrink" => "Sucrée",
+            ],
+            [
+                "nameDrink" => "Maltina",
+                "imageDrink" => "",
+                "typeDrink" => "Sucrée",
+            ],
+            [
+                "nameDrink" => "Fanta",
+                "imageDrink" => "",
+                "typeDrink" => "Sucrée",
+            ],
+            [
+                "nameDrink" => "Energy malt",
+                "imageDrink" => "",
+                "typeDrink" => "Sucrée",
+            ],
+            [
+                "nameDrink" => "Sprite",
+                "imageDrink" => "",
+                "typeDrink" => "Sucrée",
+            ],
+            [
+                "nameDrink" => "Coca-cola",
+                "imageDrink" => "",
+                "typeDrink" => "Sucrée",
+            ],
+            [
+                "nameDrink" => "Vital'o",
+                "imageDrink" => "",
+                "typeDrink" => "Sucrée",
+            ],
+            [
+                "nameDrink" => "Schweppes",
+                "imageDrink" => "",
+                "typeDrink" => "Sucrée",
+            ],
+            [
+                "nameDrink" => "Bavaria",
+                "imageDrink" => "",
+                "typeDrink" => "Sucrée",
+            ],
+        ]);
+
         
         DB::table('users')->insert([
             [

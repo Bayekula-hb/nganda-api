@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\productController;
 use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
 use App\Http\Controllers\API\userRoleController;
@@ -35,10 +36,16 @@ Route::prefix('v1')->group(function () {
     Route::get('/userRoles', [userRoleController::class, 'index']);
 
 
-    Route::prefix('')->group(function () {
+    Route::prefix('')->middleware(['auth:sanctum'])->group(function () {
 
         Route::prefix('/user')->group(function () {        
             Route::get("", [userController::class, 'index']);
+        });
+
+        Route::prefix("/products")->group(function ()
+        {
+            Route::get("", [productController::class, 'index']);
+            Route::post("", [productController::class, 'store']);
         });
 
     });
