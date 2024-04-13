@@ -108,6 +108,10 @@ class userController extends Controller
                             ->join('users', 'establishments.user_id', '=', 'users.id')                           
                             ->first();
 
+                $currentEstablishmnt = establishment::where('user_id',$request->user()->id)                         
+                            ->first();  
+                $workers = json_decode($currentEstablishmnt->workers);
+
                 $userRoleTab = DB::table('users')
                             ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
                             ->where('user_id',$request->user()->id)
@@ -116,10 +120,11 @@ class userController extends Controller
                 $userRole = userRole::where('id',$userRoleTab->user_role_id)
                             ->first();
 
+
                 if($establishmnt && $userRole->nameRole == "manager"){
 
                     $userRoleReceiver = userRole::where('nameRole', 'receiver')
-                                                    ->first();
+                                        ->first();
                     DB::beginTransaction();
 
                     $user = User::create([
@@ -131,6 +136,11 @@ class userController extends Controller
                         'password' => Hash::make($request->password),
                         'gender' => $request->gender,
                     ]);
+
+                    //Update the worker
+                    array_push($workers, (integer) $user->id);
+                    $currentEstablishmnt->workers = json_encode($workers);
+                    $currentEstablishmnt->save();
 
                     $userRoleTab = userRoleTab::create([
                         'user_id' => $user->id,
@@ -171,6 +181,10 @@ class userController extends Controller
                             ->join('users', 'establishments.user_id', '=', 'users.id')                           
                             ->first();
 
+                $currentEstablishmnt = establishment::where('user_id',$request->user()->id)                         
+                            ->first();  
+                $workers = json_decode($currentEstablishmnt->workers);
+
                 $userRoleTab = DB::table('users')
                             ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
                             ->where('user_id',$request->user()->id)
@@ -195,6 +209,11 @@ class userController extends Controller
                         'password' => Hash::make($request->password),
                         'gender' => $request->gender,
                     ]);
+
+                    //Update the worker
+                    array_push($workers, (integer) $user->id);
+                    $currentEstablishmnt->workers = json_encode($workers);
+                    $currentEstablishmnt->save();
 
                     $userRoleTab = userRoleTab::create([
                         'user_id' => $user->id,
@@ -235,6 +254,10 @@ class userController extends Controller
                             ->join('users', 'establishments.user_id', '=', 'users.id')                           
                             ->first();
 
+                $currentEstablishmnt = establishment::where('user_id',$request->user()->id)                         
+                            ->first();  
+                $workers = json_decode($currentEstablishmnt->workers);
+
                 $userRoleTab = DB::table('users')
                             ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
                             ->where('user_id',$request->user()->id)
@@ -259,6 +282,11 @@ class userController extends Controller
                         'password' => Hash::make($request->password),
                         'gender' => $request->gender,
                     ]);
+
+                    //Update the worker
+                    array_push($workers, (integer) $user->id);
+                    $currentEstablishmnt->workers = json_encode($workers);
+                    $currentEstablishmnt->save();
 
                     $userRoleTab = userRoleTab::create([
                         'user_id' => $user->id,

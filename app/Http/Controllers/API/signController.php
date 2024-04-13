@@ -58,6 +58,7 @@ class signController extends Controller
                     'pos' => $request->pos,
                     'numberPos' => $request->numberPos,
                     'user_id' => $user->id,
+                    'workers' => json_encode([$user->id]),
                 ]);
 
                 $token = $user->createToken($user->id);

@@ -23,6 +23,7 @@ class establishment extends Model
         'address',
         'pos',
         'numberPos',
+        'workers',
         'user_id',
     ];
 

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('pos')->nullable();
             $table->string('numberPos')->max(12)->nullable();
+            $table->json('workers')->nullable();
             $table->foreignIdFor(User::class)
                 ->references('id')
                 ->on('users');
