@@ -21,6 +21,10 @@ class inventoryDrink extends Model
         'drink_id',
         'establishment_id',
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
     public function sale(): HasMany
     {

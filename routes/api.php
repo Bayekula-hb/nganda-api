@@ -4,8 +4,11 @@ use App\Http\Controllers\API\productController;
 use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
 use App\Http\Controllers\API\userRoleController;
+use App\Http\Middleware\receiverRegisterMiddleware;
+use App\Http\Middleware\registerProductsMiddleware;
 use App\Http\Middleware\signMiddleware;
 use App\Http\Middleware\userLoginMiddleware;
+use App\Http\Middleware\userUpdatePasswordMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,12 +43,17 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('/user')->group(function () {        
             Route::get("", [userController::class, 'index']);
+            Route::post("/receiver", [userController::class, 'receiver'])->middleware(receiverRegisterMiddleware::class);
+            Route::post("/cashier", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);
+            Route::post("/banner", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);
+
+            Route::post("/update-password", [userController::class, 'updatePassword'])->middleware(userUpdatePasswordMiddleware::class);
         });
 
         Route::prefix("/products")->group(function ()
         {
             Route::get("", [productController::class, 'index']);
-            Route::post("", [productController::class, 'store']);
+            Route::post("", [productController::class, 'store'])->middleware(registerProductsMiddleware::class);
         });
 
     });

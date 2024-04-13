@@ -20,6 +20,10 @@ class sale extends Model
         'establishment_id',
         'inventory_drink_id',
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
             
     public function users(): BelongsTo

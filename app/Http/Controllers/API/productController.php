@@ -16,10 +16,6 @@ class productController extends Controller
     //Get all product
     public function index(Request $request) 
     {
-
-
-
-
         try {   
 
             $establishmnt = establishment::where('user_id',$request->user()->id)->first();
@@ -68,20 +64,22 @@ class productController extends Controller
             $establishmnt = establishment::where('user_id',$request->user()->id)->first();
 
             if($establishmnt->user_id == $request->user()->id){
-
+                
+                $products_created = [];
                 foreach ($request->drinkList as $key => $drink) {
 
                     $products = inventoryDrink::create([
-                        'quantity' => $drink->quantity,
-                        'price' => $drink->price,
+                        'quantity' => (integer) $drink->quantity,
+                        'price' => (double) $drink->price,
                         'drink_id' => $drink->drink_id,
                         'establishment_id' => $establishmnt->id,
                     ]);
+                    array_push($products_created, $products);
                 }
                 return response()->json([
                     'error'=>false,
                     'message'=> 'Products created successfully', 
-                    // 'data'=>$package
+                    'data'=>$products_created
                 ], 200); 
 
             }else {

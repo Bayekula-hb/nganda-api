@@ -20,6 +20,11 @@ class userRoleTab extends Model
         'user_role_id',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
         
     public function users(): BelongsTo
     {
