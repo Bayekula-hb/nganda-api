@@ -5,6 +5,7 @@ use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
 use App\Http\Controllers\API\userRoleController;
 use App\Http\Middleware\receiverRegisterMiddleware;
+use App\Http\Middleware\registerOneProductMiddleware;
 use App\Http\Middleware\registerProductsMiddleware;
 use App\Http\Middleware\signMiddleware;
 use App\Http\Middleware\userLoginMiddleware;
@@ -53,7 +54,9 @@ Route::prefix('v1')->group(function () {
         Route::prefix("/products")->group(function ()
         {
             Route::get("", [productController::class, 'index']);
+            Route::get("/all", [productController::class, 'allProducts']);
             Route::post("", [productController::class, 'store'])->middleware(registerProductsMiddleware::class);
+            Route::post("/add", [productController::class, 'product'])->middleware(registerOneProductMiddleware::class);
         });
 
     });
