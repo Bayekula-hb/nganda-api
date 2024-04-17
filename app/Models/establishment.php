@@ -24,6 +24,7 @@ class establishment extends Model
         'pos',
         'numberPos',
         'workers',
+        'workingDays',
         'user_id',
     ];
 

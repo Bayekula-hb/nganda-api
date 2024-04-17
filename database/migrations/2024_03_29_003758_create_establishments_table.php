@@ -15,12 +15,13 @@ return new class extends Migration
         Schema::create('establishments', function (Blueprint $table) {
             $table->id();
             $table->string('nameEtablishment');
-            $table->string('latitude');
-            $table->string('longitude');
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
             $table->string('address');
             $table->string('pos')->nullable();
             $table->string('numberPos')->max(12)->nullable();
             $table->json('workers')->nullable();
+            $table->json('workingDays')->nullable();
             $table->foreignIdFor(User::class)
                 ->references('id')
                 ->on('users');

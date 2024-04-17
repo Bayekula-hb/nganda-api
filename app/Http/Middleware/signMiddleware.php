@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Validator;
 
-class signMiddleware
+class   signMiddleware
 {
     /**
      * Handle an incoming request.
@@ -20,16 +20,18 @@ class signMiddleware
             'firstName' => ['required', 'string','min:2', 'max:100'],
             'middleName' => ['min:2', 'string','max:100'],
             'lastName' => ['required', 'string','min:2', 'max:100'],
+            'userName' => ['required', 'string','min:2', 'max:100'],
             'phoneNumber' => ['required', 'min:10', 'max:15'],
             'email' => ['required', 'email', 'unique:users,email'],
             'gender' => ['required', 'max:1', 'in:M,F'],
             'password' => ['required','min:6'],
             'nameEtablishment' => ['required', 'string','min:2', 'max:100'],
-            'latitude' => ['required', 'string','min:2', 'max:20'],
-            'longitude' => ['required', 'string','min:2', 'max:20'],
-            'address' => ['required', 'string','min:2', 'max:100'],
+            'latitude' => ['string','min:2', 'max:20'],
+            'longitude' => ['string','min:2', 'max:20'],
+            'address' => ['required', 'string','min:2'],
             'pos' => ['string','min:2', 'max:100'],
             'numberPos' => ['string','min:2', 'max:100'],
+            'workingDays' => ['required'],
         ]);
 
         if($validated->fails()){

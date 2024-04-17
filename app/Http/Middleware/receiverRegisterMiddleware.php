@@ -20,6 +20,7 @@ class receiverRegisterMiddleware
             'firstName' => ['required', 'string','min:2', 'max:100'],
             'middleName' => ['min:2', 'string','max:100'],
             'lastName' => ['required', 'string','min:2', 'max:100'],
+            'userName' => ['required', 'string','min:2', 'max:100'],
             'phoneNumber' => ['required', 'min:10', 'max:15'],
             'email' => ['email', 'unique:users,email'],
             'gender' => ['required', 'max:1', 'in:M,F'],

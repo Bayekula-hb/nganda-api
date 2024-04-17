@@ -23,21 +23,13 @@ class signController extends Controller
     public function singup(Request $request)
     {
         try {
-            // $requestUser = $request;
-
-            // DB::transaction(function () {
-
-                // return response()->json([
-                //     'error'=>false,
-                //     'message' => 'Request failed, please try again',
-                //     'data' => $requestUser,
-                // ], 400);   
                 DB::beginTransaction();
-
+                
                 $user = User::create([
                     'firstName' => $request->firstName,
                     'middleName' => $request->middleName,
                     'lastName' => $request->lastName,
+                    'userName' => $request->userName,
                     'email' => $request->email,
                     'phoneNumber' => $request->phoneNumber,
                     'password' => Hash::make($request->password),
@@ -59,6 +51,7 @@ class signController extends Controller
                     'numberPos' => $request->numberPos,
                     'user_id' => $user->id,
                     'workers' => json_encode([$user->id]),
+                    'workingDays' => json_encode($request->workingDays),
                 ]);
 
                 $token = $user->createToken($user->id);
