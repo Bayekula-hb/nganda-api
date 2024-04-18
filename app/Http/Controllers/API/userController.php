@@ -43,7 +43,8 @@ class userController extends Controller
     public function auth(Request $request)
     {
         try {
-            $userFind = User::where('email', $request->userName)->orWhere('phoneNumber', $request->userName)->first();
+            $userFind = User::where('userName', $request->userName)->first();
+            // ->orWhere('phoneNumber', $request->userName)->first();
             
             if( $userFind){
                 if (Hash::check($request->password, $userFind->password)) {

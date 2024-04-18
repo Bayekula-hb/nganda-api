@@ -168,6 +168,7 @@ class DatabaseSeeder extends Seeder
                 'lastName' => 'admin',
                 'firstName' => 'admin',
                 'middleName' => 'admin',
+                'userName' => 'hobedbayekula@gmail.com',
                 'gender' => 'M',
                 'phoneNumber' => '+243825135297',
                 'email' => 'hobedbayekula@gmail.com',
