@@ -131,6 +131,64 @@ class productController extends Controller
         }
     }
     
+    
+    /**
+     * Procurement a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function procurement(Request $request)
+    {
+        try {
+            
+            DB::beginTransaction();
+            
+            $establishmnt = establishment::where('user_id',$request->user()->id)->first();
+
+            if($establishmnt->user_id == $request->user()->id){
+                
+                $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
+
+                $productsUpdated = [];
+
+                foreach ($request->drinkList as $drink) {
+                    foreach ($inventoryDrinkList as $inventoryDrink) {
+                        if($drink['drink_id'] == $inventoryDrink->drink_id){
+
+                            $inventoryDrink->quantity += (integer) $drink['quantity'];
+                            $inventoryDrink->save();
+                            
+                            array_push($productsUpdated, $inventoryDrink);
+
+                        }                        
+                    }
+                }              
+
+                DB::commit();
+                return response()->json([
+                    'error'=>false,
+                    'message'=> 'Products updated successfully', 
+                    'data'=>$productsUpdated
+                ], 200); 
+
+            }else {
+                return response()->json([
+                    'error'=>false,
+                    'message'=> "You're not authorized to create this ressource",
+                ], 400); 
+            }
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th->getMessage(),
+            ], 400);        
+        }
+    }
+    
     /**
      * Store a newly created resource in storage.
      *

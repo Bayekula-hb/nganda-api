@@ -100,6 +100,82 @@ class userController extends Controller
         }
     }
 
+    public function store(Request $request)
+    {
+        
+        try {
+                $establishmnt = establishment::where('user_id',$request->user()->id)
+                            ->join('users', 'establishments.user_id', '=', 'users.id')                           
+                            ->first();
+
+                $currentEstablishmnt = establishment::where('user_id',$request->user()->id)                         
+                            ->first();  
+                $workers = json_decode($currentEstablishmnt->workers);
+
+                $userRoleTab = DB::table('users')
+                            ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                            ->where('user_id',$request->user()->id)
+                            ->first();
+
+                $userRole = userRole::where('id',$userRoleTab->user_role_id)
+                            ->first();
+
+
+                if($establishmnt && $userRole->nameRole == "manager"){
+                        
+                    DB::beginTransaction();
+
+                    $user = User::create([
+                        'firstName' => $request->firstName,
+                        'middleName' => $request->middleName,
+                        'lastName' => $request->lastName,
+                        'userName' => $request->userName,
+                        'email' => $request->email,
+                        'phoneNumber' => $request->phoneNumber,
+                        'password' => Hash::make($request->password),
+                        'gender' => $request->gender,
+                    ]);
+
+                    //Update the worker
+                    array_push($workers, (integer) $user->id);
+                    $currentEstablishmnt->workers = json_encode($workers);
+                    $currentEstablishmnt->save();
+
+                    foreach ($request->userRole as $userRole) {        
+
+                        $userRoleTab = userRoleTab::create([
+                            'user_id' => $user->id,
+                            'user_role_id' => $userRole,
+                        ]);
+
+                    }    
+
+                    DB::commit();
+
+                    return response()->json([
+                        'error'=>false,
+                        'message'=> 'User receiver created with successfully', 
+                        'data' => [
+                            "user" => $user,
+                            "userRoles" => $userRoleTab,
+                        ]
+                    ], 200); 
+                }else{
+                    return response()->json([
+                        'error'=>true,
+                        'message' => 'You are authorized to create the receiver',
+                    ], 400);  
+                }       
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th,
+            ], 400);     
+        }
+    }
+
     public function receiver(Request $request)
     {
         

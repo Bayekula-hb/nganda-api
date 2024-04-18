@@ -4,11 +4,13 @@ use App\Http\Controllers\API\productController;
 use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
 use App\Http\Controllers\API\userRoleController;
+use App\Http\Middleware\procurementProductMiddleware;
 use App\Http\Middleware\receiverRegisterMiddleware;
 use App\Http\Middleware\registerOneProductMiddleware;
 use App\Http\Middleware\registerProductsMiddleware;
 use App\Http\Middleware\signMiddleware;
 use App\Http\Middleware\userLoginMiddleware;
+use App\Http\Middleware\userRegisterMiddleware;
 use App\Http\Middleware\userUpdatePasswordMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +49,7 @@ Route::prefix('v1')->group(function () {
             Route::post("/receiver", [userController::class, 'receiver'])->middleware(receiverRegisterMiddleware::class);
             Route::post("/cashier", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);
             Route::post("/banner", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);
+            Route::post("", [userController::class, 'store'])->middleware(userRegisterMiddleware::class);
 
             Route::post("/update-password", [userController::class, 'updatePassword'])->middleware(userUpdatePasswordMiddleware::class);
         });
@@ -57,6 +60,7 @@ Route::prefix('v1')->group(function () {
             Route::get("/all", [productController::class, 'allProducts']);
             Route::post("", [productController::class, 'store'])->middleware(registerProductsMiddleware::class);
             Route::post("/add", [productController::class, 'product'])->middleware(registerOneProductMiddleware::class);
+            Route::put("/procurement", [productController::class, 'procurement'])->middleware(procurementProductMiddleware::class);
         });
 
     });
