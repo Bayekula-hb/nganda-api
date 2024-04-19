@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\API\drinkController;
 use App\Http\Controllers\API\productController;
 use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
 use App\Http\Controllers\API\userRoleController;
+use App\Http\Middleware\drinkUpdatedImgMiddleware;
 use App\Http\Middleware\procurementProductMiddleware;
 use App\Http\Middleware\receiverRegisterMiddleware;
 use App\Http\Middleware\registerOneProductMiddleware;
@@ -61,6 +63,12 @@ Route::prefix('v1')->group(function () {
             Route::post("", [productController::class, 'store'])->middleware(registerProductsMiddleware::class);
             Route::post("/add", [productController::class, 'product'])->middleware(registerOneProductMiddleware::class);
             Route::put("/procurement", [productController::class, 'procurement'])->middleware(procurementProductMiddleware::class);
+        });
+
+        Route::prefix("/drink")->group(function ()
+        {
+            Route::get("", [drinkController::class, 'index']);
+            Route::put("", [drinkController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
         });
 
     });
