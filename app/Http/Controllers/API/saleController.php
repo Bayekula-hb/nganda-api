@@ -65,36 +65,6 @@ class saleController extends Controller
 
                     if($user->nameRole == 'admin' || $user->nameRole == 'manager' || $user->nameRole == 'barman' || $user->nameRole == 'cashier'){
                         
-                        // $sales = sale::select('inventory_drinks.id as inventoryDrinkId', 'inventory_drinks.establishment_id as establishmentDrinkId')
-                        //         ->join('establishments', 'sales.establishment_id', '=', 'establishments.id')
-                        //         ->join('inventory_drinks', 'sales.inventory_drink_id', '=', 'inventory_drinks.id')
-                        //         ->groupBy('inventoryDrinkId')
-                        //         ->selectRaw('inventory_drinks.id, COUNT(*) as count')
-                        //         ->where('sales.establishment_id', $establishmnt->id)
-                        //         ->whereNotBetween('sales.created_at',  [date('Y-m-d'), date('Y-m-d')])
-                        //         ->get();
-
-                        // $sales = sale::where('sales.establishment_id', $establishmnt->id)
-                        //             ->join('establishments as est', 'sales.establishment_id', '=', 'est.id')
-                        //             ->join('inventory_drinks as invt', 'est.id', '=', 'invt.establishment_id')
-                        //             ->join('drinks', 'invt.drink_id', '=', 'drinks.id')
-                        //             ->get();
-
-                        // $sales = sale::select(
-                        //         'sales.id',
-                        //         'sales.quantity',
-                        //         'invt.id as inventoryID', 
-                        //         'invt.price', // Sélectionnez le prix de la boisson
-                        //         'drinks.nameDrink',
-                        //         'drinks.id as drinkID',
-                        //         DB::raw('sales.quantity * invt.price as amount') // Calculez le montant
-                        //     )
-                        //     // ->join('establishments as est', 'sales.establishment_id', '=', 'est.id')
-                        //     // ->join('inventory_drinks as invt', 'establishments.id', '=', 'invt.establishment_id')
-                        //     ->join('inventory_drinks as invt', 'invt.id', '=', 'sales.inventory_drink_id')
-                        //     ->join('drinks', 'invt.drink_id', '=', 'drinks.id')
-                        //     ->where('sales.establishment_id', $establishmnt->id)
-                        //     ->get();
 
                         $sales = drink::select(
                                 'sales.id',
@@ -109,12 +79,43 @@ class saleController extends Controller
                             ->join('sales', 'invt.id', '=', 'sales.inventory_drink_id')
                             ->where('sales.establishment_id', $establishmnt->id)
                             ->whereBetween('sales.created_at',  [Carbon::now()->startOfDay(), Carbon::now()->endOfDay()])
-                            ->get();
+                        ->get();
+                        
+                        $saleAdvance = [];
+                        $isFindMoreOne = false;
+                        $saleAmount = 0;
+
+                        // return response()->json([
+                        //     'error'=>true,
+                        //     'message' => $sales
+                        // ], 400);    
+
+                        for ($incrLength1 = 0; $incrLength1 < sizeof($sales) ; $incrLength1++) { 
+
+                            for ($i=$incrLength1+1; $i < sizeof($sales) ; $i++) {
+                                if($sales[$incrLength1]->drinkID == $sales[$i]->drinkID){
+                                    $sales[$incrLength1]->quantity += $sales[$i]->quantity;
+                                    $sales[$incrLength1]->amount += $sales[$i]->amount;
+
+                                    $isFindMoreOne = true;
+                                    $saleAmount += (integer) $sales[$incrLength1]->amount;
+                                    array_push($saleAdvance, $sales[$incrLength1]);
+                                }
+                            }
+                            if($isFindMoreOne == false){
+                                array_push($saleAdvance, $sales[$incrLength1]);
+                                $saleAmount += (integer) $sales[$incrLength1]->amount;
+                            }
+                        }
 
                         return response()->json([
                             'error'=>false,
                             'message' => 'Statistics received successfully',
-                            'data'=>$sales
+                            'data'=> [
+                                'products' =>  $saleAdvance,
+                                'amoutSale' =>  $saleAmount,
+                            ]
+                           
                         ], 200);  
 
                     }else {
@@ -140,7 +141,6 @@ class saleController extends Controller
             ], 400);        
         }
     }
-
        
     /**
      * Store a newly created resource in storage.
