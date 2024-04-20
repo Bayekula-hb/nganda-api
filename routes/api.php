@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\drinkController;
 use App\Http\Controllers\API\productController;
+use App\Http\Controllers\API\saleController;
 use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
 use App\Http\Controllers\API\userRoleController;
@@ -10,6 +11,7 @@ use App\Http\Middleware\procurementProductMiddleware;
 use App\Http\Middleware\receiverRegisterMiddleware;
 use App\Http\Middleware\registerOneProductMiddleware;
 use App\Http\Middleware\registerProductsMiddleware;
+use App\Http\Middleware\saleProductsMiddleware;
 use App\Http\Middleware\signMiddleware;
 use App\Http\Middleware\userLoginMiddleware;
 use App\Http\Middleware\userRegisterMiddleware;
@@ -69,6 +71,14 @@ Route::prefix('v1')->group(function () {
         {
             Route::get("", [drinkController::class, 'index']);
             Route::put("", [drinkController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
+        });
+
+        Route::prefix("/sale")->group(function ()
+        {
+            Route::get("", [saleController::class, 'index']);
+            Route::get("/statistics", [saleController::class, 'statistics']);
+            Route::post("", [saleController::class, 'store'])->middleware(saleProductsMiddleware::class);
+            // Route::put("", [saleController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
         });
 
     });

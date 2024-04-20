@@ -19,20 +19,31 @@ class productController extends Controller
     {
         try {   
 
-            $establishmnt = establishment::where('user_id',$request->user()->id)->first();
+            $establishmnts = establishment::all();
 
-            if($establishmnt){
+            foreach ($establishmnts as $establishmnt) {
 
-                $inventoryDrink  = inventoryDrink::where('establishment_id', $establishmnt->id)
-                                        ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
-                                        ->get();
+                $index = array_search($request->user()->id, json_decode($establishmnt->workers));
 
-                return response()->json([
-                    'error'=>false,
-                    'message'=> 'Data received successfully', 
-                    'data'=>$inventoryDrink
-                ], 200);
+                if ($index !== false) {
+
+                    $inventoryDrink  = inventoryDrink::where('establishment_id', $establishmnt->id)
+                                            ->where('quantity', '>', 0)
+                                            ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
+                                            ->get();
+
+                    return response()->json([
+                        'error'=>false,
+                        'message'=> 'Data received successfully', 
+                        'data'=>$inventoryDrink
+                    ], 200);
+                }
             }
+            return response()->json([
+                'error'=>false,
+                'message'=> "You're not authorized to get this ressource",
+            ], 400); 
+
 
         } catch (Throwable $e) {
             return response()->json([

@@ -35,8 +35,8 @@ class DatabaseSeeder extends Seeder
                 "descriptionRole" => "Caissier",
             ],
             [
-                "nameRole" => "banner",
-                "descriptionRole" => "Bannière ",
+                "nameRole" => "barman",
+                "descriptionRole" => "Barman ",
             ],
             [
                 "nameRole" => "receiver",
