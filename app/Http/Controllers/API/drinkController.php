@@ -32,7 +32,6 @@ class drinkController extends Controller
         }
     }
 
-        
     /**
      * update a newly created resource in storage.
      *
@@ -73,6 +72,47 @@ class drinkController extends Controller
                 'data'=>$productsUpdated
             ], 200); 
             
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th->getMessage(),
+            ], 400);        
+        }
+    }
+
+    /**
+     * update a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateDrink(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $drink = drink::where('id', $request->drink_id)->first();
+            if($drink){
+                // Stockez le fichier dans le sous-dossier "img" du répertoire "public"
+                $imagePath = $request->file('imageDrink')->store('img', 'public');
+
+                $drink->imageDrink = $imagePath;
+                $drink->save();
+                
+                DB::commit();
+                return response()->json([
+                    'error'=>false,
+                    'message'=> 'Products updated successfully', 
+                    'data'=>$drink
+                ], 200);    
+            }else {
+                return response()->json([
+                    'error'=>false,
+                    'message'=> 'Products updated successfully', 
+                    'data'=>$drink
+                ], 200);
+            }            
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([

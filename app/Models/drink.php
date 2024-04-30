@@ -18,6 +18,7 @@ class drink extends Model
     protected $fillable = [
         'nameDrink',
         'imageDrink',
+        'litrage',
         'typeDrink',
     ];
     protected $hidden = [

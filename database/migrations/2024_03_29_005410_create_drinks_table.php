@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nameDrink');
             $table->string('imageDrink');
+            $table->string('litrage');
             $table->string('typeDrink');
             $table->timestamps();
         });

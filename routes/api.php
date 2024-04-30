@@ -13,6 +13,7 @@ use App\Http\Middleware\registerOneProductMiddleware;
 use App\Http\Middleware\registerProductsMiddleware;
 use App\Http\Middleware\saleProductsMiddleware;
 use App\Http\Middleware\signMiddleware;
+use App\Http\Middleware\updatedDrinkImgMiddleware;
 use App\Http\Middleware\userLoginMiddleware;
 use App\Http\Middleware\userRegisterMiddleware;
 use App\Http\Middleware\userUpdatePasswordMiddleware;
@@ -71,19 +72,17 @@ Route::prefix('v1')->group(function () {
         {
             Route::get("", [drinkController::class, 'index']);
             Route::put("", [drinkController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
+            Route::put("/{id}", [drinkController::class, 'updateDrink'])->middleware(updatedDrinkImgMiddleware::class);
         });
 
         Route::prefix("/sale")->group(function ()
         {
             Route::get("", [saleController::class, 'index']);
             Route::get("/statistics", [saleController::class, 'statistics']);
+            Route::get("/statistics/{startDate}/{endDate}", [saleController::class, 'statisticByDate']);
             Route::post("", [saleController::class, 'store'])->middleware(saleProductsMiddleware::class);
             // Route::put("", [saleController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
         });
 
     });
-
-
-    
-
 });

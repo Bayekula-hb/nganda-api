@@ -73,7 +73,7 @@ class userController extends Controller
                            'firstName' => $userFind->firstName,
                            'gender' => $userFind->gender,
                            'email' => $userFind->email,
-                           'phoneNumber' => $userFind->gender,
+                           'phoneNumber' => $userFind->phoneNumber,
                            'id' => $userFind->id,
                            'token' => $token->plainTextToken,
                            'userRoles' => $userRoleTab,
