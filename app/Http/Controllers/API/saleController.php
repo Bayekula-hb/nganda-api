@@ -9,6 +9,7 @@ use App\Models\inventoryDrink;
 use App\Models\sale;
 use App\Models\User;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -201,6 +202,121 @@ class saleController extends Controller
                                 'products' =>  $saleAdvance,
                                 'amoutSale' =>  $saleAmount,
                             ]
+                           
+                        ], 200);
+                    }else {
+                        return response()->json([
+                            'error'=>false,
+                            'message'=> "You're not authorized to get this ressource",
+                        ], 400); 
+                    }
+                }
+            }
+            
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, because your are not access to get statistics'
+            ], 400);      
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th->getMessage(),
+            ], 400);        
+        }
+    }
+
+
+    //Get Statistics End Date
+    public function statisticEndDateWithSixPreviousDays (Request $request, $endDate) 
+    {
+        try {
+
+            $dateSend = new DateTime($endDate);
+            $date = Carbon::parse($dateSend); 
+
+            $weekByDateSend = collect();
+            for ($i = 0; $i <= 6; $i++) {
+                $weekByDateSend->push($date->copy()->subDays($i)->toDateString());
+            }
+
+            DB::beginTransaction();
+
+            $establishmnts = establishment::all();
+
+            foreach ($establishmnts as $establishmnt) {
+                $index = array_search($request->user()->id, json_decode($establishmnt->workers));
+                if ($index !== false) {
+                    
+                    $user = User::where('users.id', $request->user()->id)
+                                ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                                ->join('user_roles', 'user_roles.id', '=', 'user_role_tabs.user_role_id')                                
+                                ->first();
+
+                    if($user->nameRole == 'admin' || $user->nameRole == 'manager' || $user->nameRole == 'barman' || $user->nameRole == 'cashier'){
+
+                        $dataSaleByWeek = [];
+                        $dataSaleByWeekDetails = [];
+                        $totalAmountSale = 0;
+
+                        for ($i = sizeof($weekByDateSend) -1 ; $i >= 0 ; $i--) { 
+
+                            $currentSale = drink::select(
+                                'sales.id',
+                                'sales.quantity',
+                                'invt.id as inventoryID', 
+                                'invt.price',
+                                'drinks.nameDrink',
+                                'drinks.id as drinkID',
+                                DB::raw('sales.quantity * invt.price as amount')
+                            )
+                            ->join('inventory_drinks as invt', 'invt.drink_id', '=', 'drinks.id')
+                            ->join('sales', 'invt.id', '=', 'sales.inventory_drink_id')
+                            ->where('sales.establishment_id', $establishmnt->id)
+                            ->whereBetween('sales.created_at',  [Carbon::parse($weekByDateSend[$i])->startOfDay(), Carbon::parse($weekByDateSend[$i])->endOfDay()])
+                            ->get();
+
+                            $tempData =  [
+                                "currentDate" => $weekByDateSend[$i],
+                                "data" => $currentSale
+                            ];
+                            array_push($dataSaleByWeek,$tempData);
+                        }
+                        
+                        $saleAdvance = [];
+                        $isFindMoreOne = false;
+
+                        for ($incr=0; $incr < sizeof($dataSaleByWeek); $incr++) { 
+                            $saleAmount = 0;
+                            for ($incrLength1 = 0; $incrLength1 < sizeof($dataSaleByWeek[$incr]["data"]) ; $incrLength1++) { 
+                                for ($i= $incrLength1+1; $i < sizeof($dataSaleByWeek[$incr]["data"]) ; $i++) {
+
+                                    if($dataSaleByWeek[$incr]["data"][$incrLength1]->drinkID == $dataSaleByWeek[$incr]["data"][$i]->drinkID){
+                                        $dataSaleByWeek[$incr]["data"][$incrLength1]->quantity += $dataSaleByWeek[$incr]["data"][$i]->quantity;
+                                        $dataSaleByWeek[$incr]["data"][$incrLength1]->amount += $dataSaleByWeek[$incr]["data"][$i]->amount;
+
+                                        $isFindMoreOne = true;
+                                        $saleAmount += (integer) $dataSaleByWeek[$incr]["data"][$incrLength1]->amount;
+                                        array_push($saleAdvance, $dataSaleByWeek[$incr]["data"][$incrLength1]);
+                                    }
+                                }
+                                if($isFindMoreOne == false){
+                                    array_push($saleAdvance, $dataSaleByWeek[$incr]["data"][$incrLength1]);
+                                    $saleAmount += (integer) $dataSaleByWeek[$incr]["data"][$incrLength1]->amount;
+                                }
+                            }
+                            $totalAmountSale += $saleAmount;
+                            array_push($dataSaleByWeekDetails, [
+                                "amount" => $saleAmount,
+                                "currentDate" => $dataSaleByWeek[$incr]["currentDate"]
+                            ]);
+                        }
+                        return response()->json([
+                            'error'=>false,
+                            'message' => 'Statistics received successfully',
+                            'data'=> $dataSaleByWeekDetails
                            
                         ], 200);
                     }else {

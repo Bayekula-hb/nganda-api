@@ -80,6 +80,7 @@ Route::prefix('v1')->group(function () {
             Route::get("", [saleController::class, 'index']);
             Route::get("/statistics", [saleController::class, 'statistics']);
             Route::get("/statistics/{startDate}/{endDate}", [saleController::class, 'statisticByDate']);
+            Route::get("/statistics-by-date/{endDate}", [saleController::class, 'statisticEndDateWithSixPreviousDays']);
             Route::post("", [saleController::class, 'store'])->middleware(saleProductsMiddleware::class);
             // Route::put("", [saleController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
         });

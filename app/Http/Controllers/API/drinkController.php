@@ -13,8 +13,8 @@ class drinkController extends Controller
     //Get all product
     public function index(Request $request) 
     {
-        try {   
-
+        try {
+            
             $drinks = drink::all();
 
             return response()->json([
