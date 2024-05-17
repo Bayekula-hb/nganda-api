@@ -48,6 +48,18 @@ class userController extends Controller
             
             if( $userFind){
                 if (Hash::check($request->password, $userFind->password)) {
+                    
+                    $establishmnts = establishment::all();
+                    $currentEstablishment = '';
+
+                    foreach ($establishmnts as $establishmnt) {
+
+                        $index = array_search($userFind->id, json_decode($establishmnt->workers));
+                        
+                        if ($index !== false) {
+                            $currentEstablishment = $establishmnt->nameEtablishment;
+                        }
+                    }
 
                     $userRoles = userRoleTab::where('user_id', $userFind->id)->get();
                     $userRoleTab = [];
@@ -77,6 +89,7 @@ class userController extends Controller
                            'id' => $userFind->id,
                            'token' => $token->plainTextToken,
                            'userRoles' => $userRoleTab,
+                           'nameEtablishment' => $currentEstablishment,
                         ], 
                     ], 200);
                 } else {
@@ -421,4 +434,36 @@ class userController extends Controller
         }
     }
 
+    public function userByEstablishment(Request $request){
+
+        $establishmnt = establishment::where('user_id',$request->user()->id)
+                    ->join('users', 'establishments.user_id', '=', 'users.id')                           
+                    ->first();
+        
+        if($establishmnt){
+
+            $workers = json_decode($establishmnt->workers);
+            $users = [];
+
+            foreach ($workers as $worker) {
+                $user = User::where('id', $worker)->first();
+                array_push($users, $user);
+            }  
+
+            return response()->json([
+                'error'=>false,
+                'message'=> 'Users get with successfully', 
+                'data'=>[
+                    'establishment' => $establishmnt,
+                    'workers' => $users
+                ]
+            ], 200);
+        }else {
+            return response()->json([
+                'error'=>false,
+                'message'=> 'Not establishment found', 
+                'data'=>[]
+            ], 200);
+        }  
+    }
 }

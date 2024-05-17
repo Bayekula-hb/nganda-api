@@ -51,6 +51,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('/user')->group(function () {        
             Route::get("", [userController::class, 'index']);
+            Route::get("/establishment", [userController::class, 'userByEstablishment']);
             Route::post("/receiver", [userController::class, 'receiver'])->middleware(receiverRegisterMiddleware::class);
             Route::post("/cashier", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);
             Route::post("/banner", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);

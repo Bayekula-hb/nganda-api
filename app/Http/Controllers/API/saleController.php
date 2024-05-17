@@ -22,20 +22,20 @@ class saleController extends Controller
     {
         try {   
 
-            // $establishmnt = establishment::where('user_id',$request->user()->id)->first();
+            $establishmnt = establishment::where('user_id',$request->user()->id)->first();
 
-            // if($establishmnt){
+            if($establishmnt){
 
-            //     $inventoryDrink  = inventoryDrink::where('establishment_id', $establishmnt->id)
-            //                             ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
-            //                             ->get();
+                $inventoryDrink  = inventoryDrink::where('establishment_id', $establishmnt->id)
+                                        ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
+                                        ->get();
 
-            //     return response()->json([
-            //         'error'=>false,
-            //         'message'=> 'Data received successfully', 
-            //         'data'=>$inventoryDrink
-            //     ], 200);
-            // }
+                return response()->json([
+                    'error'=>false,
+                    'message'=> 'Data received successfully', 
+                    'data'=>$inventoryDrink
+                ], 200);
+            }
 
         } catch (Throwable $e) {
             return response()->json([
@@ -316,7 +316,8 @@ class saleController extends Controller
                         return response()->json([
                             'error'=>false,
                             'message' => 'Statistics received successfully',
-                            'data'=> $dataSaleByWeekDetails
+                            'data'=> [$dataSaleByWeekDetails],
+                            'chart'=> [$dataSaleByWeekDetails]
                            
                         ], 200);
                     }else {
@@ -326,12 +327,7 @@ class saleController extends Controller
                         ], 400); 
                     }
                 }
-            }
-            
-            return response()->json([
-                'error'=>true,
-                'message' => 'Request failed, because your are not access to get statistics'
-            ], 400);      
+            } 
             
         } catch (\Throwable $th) {
             DB::rollBack();
