@@ -19,7 +19,7 @@ class procurementProductMiddleware
         $validated = Validator::make($request->all(), [
             'drinkList' => ['required', 'array'],
             'drinkList.*.quantity' => ['required', 'integer'],
-            'drinkList.*.quantity' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'drinkList.*.quantity' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'drinkList.*.drink_id' => ['required', 'integer'],
         ]);
 
