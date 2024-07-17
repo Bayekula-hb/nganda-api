@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\API\drinkController;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\productController;
 use App\Http\Controllers\API\saleController;
+use App\Http\Controllers\API\SettingsController;
 use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
 use App\Http\Controllers\API\userRoleController;
+use App\Http\Middleware\createDrinkMiddleware;
 use App\Http\Middleware\drinkUpdatedImgMiddleware;
+use App\Http\Middleware\paymentMiddleware;
 use App\Http\Middleware\procurementProductMiddleware;
 use App\Http\Middleware\receiverRegisterMiddleware;
 use App\Http\Middleware\registerOneProductMiddleware;
@@ -72,6 +76,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix("/drink")->group(function ()
         {
             Route::get("", [drinkController::class, 'index']);
+            Route::post("/", [drinkController::class, 'store'])->middleware(createDrinkMiddleware::class);
             Route::put("", [drinkController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
             Route::put("/{id}", [drinkController::class, 'updateDrink'])->middleware(updatedDrinkImgMiddleware::class);
         });
@@ -86,5 +91,18 @@ Route::prefix('v1')->group(function () {
             // Route::put("", [saleController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
         });
 
+        Route::prefix("/payment")->group(function ()
+        {
+            // Route::get("", [drinkController::class, 'index']);
+            Route::post("", [PaymentController::class, 'store'])->middleware(paymentMiddleware::class);
+            Route::get("/{id}", [PaymentController::class, 'show']);
+            // Route::put("", [drinkController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
+            // Route::put("/{id}", [drinkController::class, 'updateDrink'])->middleware(updatedDrinkImgMiddleware::class);
+        });
+
+        Route::prefix("/settings")->group(function ()
+        {
+            Route::post("", [SettingsController::class, 'store']);
+        });
     });
 });

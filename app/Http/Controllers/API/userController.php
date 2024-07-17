@@ -14,7 +14,7 @@ use PHPUnit\Event\Code\Throwable;
 
 class userController extends Controller
 {
-        /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -39,8 +39,81 @@ class userController extends Controller
         }
     }
 
-    
     public function auth(Request $request)
+    {
+        try {
+            $userFind = User::where('userName', $request->userName)->first();
+            // ->orWhere('phoneNumber', $request->userName)->first();
+            
+            if( $userFind){
+                if (Hash::check($request->password, $userFind->password)) {
+                    
+                    $establishmnts = establishment::all();
+                    $currentEstablishment = '';
+
+                    foreach ($establishmnts as $establishmnt) {
+
+                        $index = array_search($userFind->id, json_decode($establishmnt->workers));
+                        
+                        if ($index !== false) {
+                            $currentEstablishment = $establishmnt->nameEtablishment;
+                        }
+                    }
+
+                    $userRoles = userRoleTab::where('user_id', $userFind->id)->get();
+                    $userRoleTab = [];
+                    foreach($userRoles as $role){
+                        $userRole = userRole::where('id', $role->user_role_id)->first();
+                        if($userRole){
+                            $userRoleObject = (object) [
+                                'nameRole' => $userRole->nameRole,
+                                'id' => $userRole->id,
+                            ];
+                            array_push($userRoleTab, $userRoleObject );
+                        }
+                    }
+
+                    $token = $userFind->createToken($userFind->id);
+
+                    return response()->json([
+                        'error'=>false,
+                        'message'=> 'User is logging successful', 
+                        'data'=>[
+                           'lastName' => $userFind->lastName,
+                           'middleName' => $userFind->middleName,
+                           'firstName' => $userFind->firstName,
+                           'gender' => $userFind->gender,
+                           'email' => $userFind->email,
+                           'phoneNumber' => $userFind->phoneNumber,
+                           'id' => $userFind->id,
+                           'token' => $token->plainTextToken,
+                           'userRoles' => $userRoleTab,
+                           'nameEtablishment' => $currentEstablishment,
+                        ], 
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'error'=>true,
+                        'message'=> 'The password is incorrect', 
+                    ], 400);
+                }
+            }else{
+                return response()->json([
+                    'error'=>true,
+                    'message'=> 'This user is not found : '.$request->username, 
+                ], 400);
+
+            }
+        } catch (Throwable $e) {
+
+            return response()->json([
+                'error'=>true,
+                'message'=> 'Something went wrong, please try again',
+            ], 400);
+        }
+    }
+
+    public function resetPassword(Request $request)
     {
         try {
             $userFind = User::where('userName', $request->userName)->first();
