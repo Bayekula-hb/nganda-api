@@ -32,6 +32,55 @@ class drinkController extends Controller
         }
     }
 
+        
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        try {
+            
+            DB::beginTransaction();
+            
+            $drinks = drink::all();
+
+            $drinkCreated = [];
+
+            foreach ($request->drinkList as $drink) {
+
+                $imagePath = $request->file('imageDrink')->store('img', 'public');
+
+                $drink = drink::create([
+                    'imageDrink' => $imagePath,
+                    'nameDrink' => $request->nameDrink,
+                    'litrage' => $request->litrage,
+                    'typeDrink' => $request->typeDrink,
+                ]);
+
+                $drink->save();                
+                array_push($drinkCreated, $drink); 
+            }           
+
+            DB::commit();
+            return response()->json([
+                'error'=>false,
+                'message'=> 'Drink created with successfully', 
+                'data'=>$drinkCreated
+            ], 200); 
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th->getMessage(),
+            ], 400);        
+        }
+    }
+
     /**
      * update a newly created resource in storage.
      *

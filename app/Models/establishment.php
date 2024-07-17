@@ -25,6 +25,9 @@ class establishment extends Model
         'numberPos',
         'workers',
         'workingDays',
+        'isOnDemonstration',
+        'subscriptionExpiryDate',
+        'settings',
         'user_id',
     ];
 
@@ -41,6 +44,11 @@ class establishment extends Model
     public function sale(): HasMany
     {
         return $this->hasMany(sale::class, 'sales');
+    }
+
+    public function payment(): HasMany
+    {
+        return $this->hasMany(sale::class, 'payments');
     }
     
     public function inventoryDrink(): HasMany
