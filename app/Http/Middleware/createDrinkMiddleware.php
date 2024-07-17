@@ -20,7 +20,7 @@ class createDrinkMiddleware
             'drinkList' => ['required', 'array'],
             'drinkList.*.imageDrink' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'drinkList.*.nameDrink' => ['required', 'string'],
-            'drinkList.*.litrage' => ['', 'string'],
+            'drinkList.*.litrage' => ['integer'],
             'drinkList.*.typeDrink' => ['required', 'string'],
         ]);
 

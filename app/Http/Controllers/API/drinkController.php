@@ -45,16 +45,17 @@ class drinkController extends Controller
             
             DB::beginTransaction();
             
-            $drinks = drink::all();
+            return response()->json([
+                'error'=>false,
+                'message'=> 'Drink created with successfully', 
+                'data'=>$request->drinkList
+            ], 200); 
 
             $drinkCreated = [];
 
             foreach ($request->drinkList as $drink) {
 
-                $imagePath = $request->file('imageDrink')->store('img', 'public');
-
                 $drink = drink::create([
-                    'imageDrink' => $imagePath,
                     'nameDrink' => $request->nameDrink,
                     'litrage' => $request->litrage,
                     'typeDrink' => $request->typeDrink,
