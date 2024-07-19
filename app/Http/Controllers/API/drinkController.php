@@ -44,12 +44,6 @@ class drinkController extends Controller
         try {
             
             DB::beginTransaction();
-            
-            return response()->json([
-                'error'=>false,
-                'message'=> 'Drink created with successfully', 
-                'data'=>$request->drinkList
-            ], 200); 
 
             $drinkCreated = [];
 
