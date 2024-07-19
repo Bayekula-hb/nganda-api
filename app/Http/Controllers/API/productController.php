@@ -7,6 +7,7 @@ use App\Models\drink;
 use App\Models\establishment;
 use App\Models\inventoryDrink;
 use App\Models\User;
+use App\Models\userRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -157,8 +158,16 @@ class productController extends Controller
             
             $establishmnt = establishment::where('user_id',$request->user()->id)->first();
 
-            if($establishmnt->user_id == $request->user()->id){
-                
+            $userRoleTab = DB::table('users')
+                ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                ->where('user_id',$request->user()->id)
+                ->first();
+
+            $userRole = userRole::where('id',$userRoleTab->user_role_id)
+                ->first();
+
+            // if($establishmnt->user_id == $request->user()->id){
+            if($establishmnt && $userRole->nameRole == "manager" || "barman"){
                 $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
 
                 $productsUpdated = [];
