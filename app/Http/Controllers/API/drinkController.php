@@ -50,9 +50,9 @@ class drinkController extends Controller
             foreach ($request->drinkList as $drink) {
 
                 $drinkCreat = drink::create([
-                    'nameDrink' => $drink->nameDrink,
-                    'litrage' => $drink->litrage,
-                    'typeDrink' => $drink->typeDrink,
+                    'nameDrink' => $drink['nameDrink'],
+                    'litrage' => $drink['litrage'],
+                    'typeDrink' => $drink['typeDrink'],
                 ]);
 
                 $drinkCreat->save();                
