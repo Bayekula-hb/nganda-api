@@ -28,7 +28,7 @@ class productController extends Controller
                 if ($index !== false) {
 
                     $inventoryDrink  = inventoryDrink::where('establishment_id', $establishmnt->id)
-                                            ->where('quantity', '>', 0)
+                                            // ->where('quantity', '>', 0)
                                             ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
                                             ->get();
 
