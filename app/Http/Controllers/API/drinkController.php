@@ -49,14 +49,14 @@ class drinkController extends Controller
 
             foreach ($request->drinkList as $drink) {
 
-                $drink = drink::create([
-                    'nameDrink' => $request->nameDrink,
-                    'litrage' => $request->litrage,
-                    'typeDrink' => $request->typeDrink,
+                $drinkCreat = drink::create([
+                    'nameDrink' => $drink->nameDrink,
+                    'litrage' => $drink->litrage,
+                    'typeDrink' => $drink->typeDrink,
                 ]);
 
-                $drink->save();                
-                array_push($drinkCreated, $drink); 
+                $drinkCreat->save();                
+                array_push($drinkCreated, $drinkCreat); 
             }           
 
             DB::commit();
