@@ -49,10 +49,16 @@ class drinkController extends Controller
 
             foreach ($request->drinkList as $drink) {
 
+                // Stockez le fichier dans le sous-dossier "img" du répertoire "public"
+                // if($drink['imageDrink'])
+                // $imagePath = $drink->file('imageDrink')->store('img', 'public');
+                // $currentDrink->imageDrink = $imagePath;
+
                 $drinkCreat = drink::create([
                     'nameDrink' => $drink['nameDrink'],
                     'litrage' => $drink['litrage'],
                     'typeDrink' => $drink['typeDrink'],
+                    'imageDrink' => '' ,
                 ]);
 
                 $drinkCreat->save();                
