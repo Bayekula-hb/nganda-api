@@ -58,6 +58,7 @@ class drinkController extends Controller
                     'nameDrink' => $drink['nameDrink'],
                     'litrage' => $drink['litrage'],
                     'typeDrink' => $drink['typeDrink'],
+                    'priorityDrink' => $drink['priorityDrink'],
                     'imageDrink' => '' ,
                 ]);
 

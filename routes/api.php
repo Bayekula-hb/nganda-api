@@ -106,3 +106,74 @@ Route::prefix('v1')->group(function () {
         });
     });
 });
+
+Route::prefix('v1.1')->group(function () {
+
+    //Singup
+    Route::post('/singup', [signController::class, 'singup'])->middleware(signMiddleware::class);
+
+    //Auth
+    Route::post('/auth/login', [userController::class, 'auth'])->middleware(userLoginMiddleware::class);
+    Route::post('/auth/forget-password', [userController::class, 'forgetPassword'])->middleware(userLoginMiddleware::class);
+
+    //Roles
+    Route::get('/userRoles', [userRoleController::class, 'index']);
+
+
+    Route::prefix('')->middleware(['auth:sanctum'])->group(function () {
+
+        Route::prefix('/user')->group(function () {        
+            Route::get("", [userController::class, 'index']);
+            Route::get("/establishment", [userController::class, 'userByEstablishment']);
+            Route::post("/receiver", [userController::class, 'receiver'])->middleware(receiverRegisterMiddleware::class);
+            Route::post("/cashier", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);
+            Route::post("/banner", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);
+            Route::post("", [userController::class, 'store'])->middleware(userRegisterMiddleware::class);
+
+            Route::post("/update-password", [userController::class, 'updatePassword'])->middleware(userUpdatePasswordMiddleware::class);
+        });
+
+        Route::prefix("/products")->group(function ()
+        {
+            Route::get("", [productController::class, 'index']);
+            Route::get("/all", [productController::class, 'allProducts']);
+            Route::post("", [productController::class, 'store'])->middleware(registerProductsMiddleware::class);
+            Route::post("/add/store", [productController::class, 'storeToInventoryStore'])->middleware(registerProductsMiddleware::class);
+            Route::post("/add", [productController::class, 'product'])->middleware(registerOneProductMiddleware::class);
+            Route::put("/procurement", [productController::class, 'procurement'])->middleware(procurementProductMiddleware::class);
+        });
+
+        Route::prefix("/drink")->group(function ()
+        {
+            Route::get("", [drinkController::class, 'index']);
+            Route::post("/", [drinkController::class, 'store'])->middleware(createDrinkMiddleware::class);
+            Route::put("", [drinkController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
+            Route::put("/{id}", [drinkController::class, 'updateDrink'])->middleware(updatedDrinkImgMiddleware::class);
+        });
+
+
+        Route::prefix("/sale")->group(function ()
+        {
+            Route::get("", [saleController::class, 'index']);
+            Route::get("/statistics", [saleController::class, 'statistics']);
+            Route::get("/statistics/{startDate}/{endDate}", [saleController::class, 'statisticByDate']);
+            Route::get("/statistics-by-date/{endDate}", [saleController::class, 'statisticEndDateWithSixPreviousDays']);
+            Route::post("", [saleController::class, 'store'])->middleware(saleProductsMiddleware::class);
+            // Route::put("", [saleController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
+        });
+
+        Route::prefix("/payment")->group(function ()
+        {
+            // Route::get("", [drinkController::class, 'index']);
+            Route::post("", [PaymentController::class, 'store'])->middleware(paymentMiddleware::class);
+            Route::get("/{id}", [PaymentController::class, 'show']);
+            // Route::put("", [drinkController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
+            // Route::put("/{id}", [drinkController::class, 'updateDrink'])->middleware(updatedDrinkImgMiddleware::class);
+        });
+
+        Route::prefix("/settings")->group(function ()
+        {
+            Route::post("", [SettingsController::class, 'store']);
+        });
+    });
+});

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
-class createDrinkMiddleware
+class paymentMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,12 +17,10 @@ class createDrinkMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $validated = Validator::make($request->all(), [
-            'drinkList' => ['required', 'array'],
-            'drinkList.*.imageDrink' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'drinkList.*.nameDrink' => ['required', 'string'],
-            'drinkList.*.litrage' => ['integer'],
-            'drinkList.*.typeDrink' => ['required', 'string'],
-            'drinkList.*.priorityDrink' => ['integer'],
+            'phone' => ['integer', 'min:9', 'required'],
+            'amount' => ['numeric', 'min:1','required'],
+            'reference' => ['string', 'min:1', 'required'],
+            'currency' => ['string', 'min:1', 'required'],
         ]);
 
         if($validated->fails()){

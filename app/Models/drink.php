@@ -20,6 +20,7 @@ class drink extends Model
         'imageDrink',
         'litrage',
         'typeDrink',
+        'priorityDrink',
     ];
     protected $hidden = [
         'created_at',
@@ -29,6 +30,10 @@ class drink extends Model
     public function inventoryDrink(): HasMany
     {
         return $this->hasMany(inventoryDrink::class, 'inventory_drinks');
+    }
+    public function inventoryDrinkStore(): HasMany
+    {
+        return $this->hasMany(inventoryStore::class, 'inventory_stores');
     }
 
 }

@@ -42,6 +42,10 @@ class DatabaseSeeder extends Seeder
                 "nameRole" => "receiver",
                 "descriptionRole" => "Receveur",
             ],
+            [
+                "nameRole" => "store-manager",
+                "descriptionRole" => "Store manager",
+            ],
         ]);
 
         DB::table('drinks')->insert([

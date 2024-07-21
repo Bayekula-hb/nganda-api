@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\drink;
 use App\Models\establishment;
 use App\Models\inventoryDrink;
+use App\Models\inventoryStore;
 use App\Models\User;
 use App\Models\userRole;
 use Illuminate\Http\Request;
@@ -93,7 +94,16 @@ class productController extends Controller
             
             $establishmnt = establishment::where('user_id',$request->user()->id)->first();
 
-            if($establishmnt->user_id == $request->user()->id){
+            $userRoleTab = DB::table('users')
+                ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                ->where('user_id',$request->user()->id)
+                ->first();
+
+            $userRole = userRole::where('id',$userRoleTab->user_role_id)
+                ->first();
+
+            // if($establishmnt->user_id == $request->user()->id){
+            if($establishmnt && $userRole->nameRole == "manager" || "barman"){
                 
                 $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
                 
@@ -123,6 +133,79 @@ class productController extends Controller
                 return response()->json([
                     'error'=>false,
                     'message'=> 'Products created successfully', 
+                    'data'=>$products_created
+                ], 200); 
+
+            }else {
+                return response()->json([
+                    'error'=>false,
+                    'message'=> "You're not authorized to create this ressource",
+                ], 400); 
+            }
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th->getMessage(),
+            ], 400);        
+        }
+    }
+    
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeToInventoryStore(Request $request)
+    {
+        try {
+            
+            DB::beginTransaction();
+            
+            $establishmnt = establishment::where('user_id',$request->user()->id)->first();
+
+            $userRoleTab = DB::table('users')
+                ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                ->where('user_id',$request->user()->id)
+                ->first();
+
+            $userRole = userRole::where('id',$userRoleTab->user_role_id)
+                ->first();
+
+            // if($establishmnt->user_id == $request->user()->id){
+            if($establishmnt && $userRole->nameRole == "manager" || "barman"){
+                
+                $inventoryDrinkList = inventoryStore::where('establishment_id', $establishmnt->id)->get();
+                
+                $products_created = [];
+
+                foreach ($request->drinkList as $drink) {
+                    foreach ($inventoryDrinkList as $inventoryDrink) {
+                        if($drink['drink_id'] == $inventoryDrink->drink_id){
+                            return response()->json([
+                                'error'=>false,
+                                'message'=> 'This product has been created, please delete it or update that', 
+                                'data'=>$drink
+                            ], 400);
+                        }                        
+                    }
+
+                    $product = inventoryStore::create([
+                        'quantity' => (integer) $drink['quantity'],
+                        'price' => (double) $drink['price'],
+                        'drink_id' => (integer) $drink['drink_id'],
+                        'establishment_id' => $establishmnt->id,
+                    ]);
+                    array_push($products_created, $product);
+                }              
+
+                DB::commit();
+                return response()->json([
+                    'error'=>false,
+                    'message'=> 'Products created successfully in store', 
                     'data'=>$products_created
                 ], 200); 
 

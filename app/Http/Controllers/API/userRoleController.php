@@ -13,7 +13,15 @@ class userRoleController extends Controller
     public function index() 
     {
         try {   
-            $userRoles = userRole::orderBy('id', 'desc')->get();
+            // $userRoles = userRole::orderBy('id', 'desc')->get();
+            $userRoles = userRole::orderBy('id', 'desc')->cursor()
+                            ->filter(function ($userRole){
+                                return $userRole->nameRole != "admin" && $userRole->nameRole != "manager";
+                            });
+            // Supprimer les rôles "admin" et "manager"
+            // $filteredRoles = $userRoles->filter(function ($role) {
+            //     return !in_array($role->nameRole, ['admin', 'manager']);
+            // });
 
             return response()->json([
                 'error'=>false,

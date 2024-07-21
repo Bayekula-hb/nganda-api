@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('drinks', function (Blueprint $table) {
+        Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('nameDrink');
-            $table->string('imageDrink');
-            $table->string('litrage');
-            $table->string('typeDrink');
-            $table->integer('priorityDrink')->nullable(false)->default(0);
+            $table->json('type_subscription')->nullable();
+            $table->integer('rate')->nullable();
+            $table->json('settings')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('drinks');
+        Schema::dropIfExists('settings');
     }
 };
