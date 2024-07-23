@@ -1,0 +1,80 @@
+name: Build and Deploy Laravel to Docker Hub and DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PWD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
+
+    - name: Delete old docker images
+      run: |
+        # List all images except the newly pulled one and delete them
+        old_images=$(sudo docker images hobed24/nganda-api --format 'hobed24/nganda-api' | grep -v '0.0.1')
+        if [ ! -z "$old_images" ]; then
+            # sudo docker rmi $old_images || true
+            docker system prune -a || true
+        fi
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        extensions: pdo_mysql
+
+    - name: Install Composer dependencies
+      run: composer install --no-interaction --optimize-autoloader
+
+    - name: Copy env example
+      run: cp .env.example .env
+
+    - name: Generate Laravel key
+      run: php artisan key:generate
+
+    - name: Run database migrations
+      run: php artisan migrate --force
+
+    - name: Deploy to DigitalOcean
+      env:
+        DIGITAL_OCEAN_HOST: ${{ secrets.DIGITAL_OCEAN_HOST }}
+        DIGITAL_OCEAN_USERNAME: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
+        DIGITAL_OCEAN_SSH_KEY: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
+      run: |
+        echo "${{ secrets.DIGITAL_OCEAN_SSH_KEY }}" > key.pem
+        chmod 600 key.pem
+        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.DIGITAL_OCEAN_USERNAME }}@${{ secrets.DIGITAL_OCEAN_HOST }} << 'EOF'
+          docker pull ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
+          docker stop nganda-api || true
+          docker rm nganda-api || true
+          docker run -d --name nganda-api -p 80:80 ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
+        EOF
