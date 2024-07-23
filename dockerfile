@@ -23,7 +23,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && a2enmod rewrite
 
 # Installer les dépendances de Composer
-RUN composer install --no-interaction --optimize-autoloader
+RUN composer install --no-interaction --optimize-autoloader --verbose
 
 # Exposer le port 80
 EXPOSE 80
