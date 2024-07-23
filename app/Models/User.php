@@ -58,6 +58,16 @@ class User extends Authenticatable
         return $this->hasMany(establishment::class, 'establishments');
     }
 
+    public function inventoryStore(): HasMany
+    {
+        return $this->hasMany(inventoryStore::class, 'inventory_stores');
+    }
+
+    public function inventoryDrink(): HasMany
+    {
+        return $this->hasMany(inventoryDrink::class, 'inventory_drinks');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

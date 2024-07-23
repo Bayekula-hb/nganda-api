@@ -19,7 +19,9 @@ class inventoryDrink extends Model
         'quantity',
         'price',
         'drink_id',
+        'type_operator',
         'establishment_id',
+        'user_id',
     ];
     protected $hidden = [
         'created_at',
@@ -31,7 +33,7 @@ class inventoryDrink extends Model
         return $this->hasMany(sale::class, 'sales');
     }
             
-    public function users(): BelongsTo
+    public function drinks(): BelongsTo
     {
         return $this->belongsTo(drink::class);
     }
@@ -39,5 +41,10 @@ class inventoryDrink extends Model
     public function establishment(): BelongsTo
     {
         return $this->belongsTo(establishment::class);
+    }
+            
+    public function users(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
