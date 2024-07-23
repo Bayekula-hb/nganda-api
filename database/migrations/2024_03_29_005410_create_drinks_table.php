@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('litrage');
             $table->string('typeDrink');
             $table->integer('priorityDrink')->nullable(false)->default(0);
+            $table->integer('numberBottle')->nullable(false)->default(12);
             $table->timestamps();
         });
     }

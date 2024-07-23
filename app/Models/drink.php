@@ -21,6 +21,7 @@ class drink extends Model
         'litrage',
         'typeDrink',
         'priorityDrink',
+        'numberBottle',
     ];
     protected $hidden = [
         'created_at',

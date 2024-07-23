@@ -30,9 +30,9 @@ class productController extends Controller
                 if ($index !== false) {
 
                     $inventoryDrink  = inventoryDrink::where('establishment_id', $establishmnt->id)
-                                            // ->where('quantity', '>', 0)
                                             ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
-                                            ->get();
+                                            ->paginate(15);
+                                            // ->get();
 
                     return response()->json([
                         'error'=>false,
@@ -69,6 +69,63 @@ class productController extends Controller
                 'message'=> 'Data received successfully', 
                 'data'=>$drinks
             ], 200);
+
+        } catch (Throwable $e) {
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $e,
+            ], 400);
+        }
+    }
+
+    //Get all products
+    public function allProductsInStore(Request $request) 
+    {
+        try {   
+
+            $establishmnts = establishment::all();
+
+            foreach ($establishmnts as $establishmnt) {
+
+                $index = array_search($request->user()->id, json_decode($establishmnt->workers));
+
+
+                if ($index !== false) {
+                    
+                    $userRoleTab = DB::table('users')
+                        ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                        ->where('user_id', json_decode($establishmnt->workers)[$index])
+                        ->first();
+
+                    $userRole = userRole::where('id',$userRoleTab->user_role_id)
+                                        ->get();
+                    foreach($userRole as $role){
+
+                        if($role->nameRole == "manager" || "store-manager"){
+
+                            $inventoryStore  = inventoryStore::where('establishment_id', $establishmnt->id)
+                                                    ->join('drinks', 'inventory_stores.drink_id', '=', 'drinks.id')
+                                                    ->paginate(15);
+
+                            return response()->json([
+                                'error'=>false,
+                                'message'=> 'Data received successfully', 
+                                'data'=>$inventoryStore
+                            ], 200);
+                        }
+                    }                    
+                    return response()->json([
+                        'error'=>false,
+                        'message'=> "You're not authorized to get this ressource",
+                    ], 400);
+                }
+            }
+            return response()->json([
+                'error'=>false,
+                'message'=> "You're not authorized to get this ressource",
+            ], 400); 
+
 
         } catch (Throwable $e) {
             return response()->json([
@@ -164,57 +221,281 @@ class productController extends Controller
         try {
             
             DB::beginTransaction();
-            
-            $establishmnt = establishment::where('user_id',$request->user()->id)->first();
 
-            $userRoleTab = DB::table('users')
-                ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
-                ->where('user_id',$request->user()->id)
-                ->first();
+            $establishmnts = establishment::all();
 
-            $userRole = userRole::where('id',$userRoleTab->user_role_id)
-                ->first();
+            foreach ($establishmnts as $establishmnt) {
 
-            // if($establishmnt->user_id == $request->user()->id){
-            if($establishmnt && $userRole->nameRole == "manager" || "barman"){
-                
-                $inventoryDrinkList = inventoryStore::where('establishment_id', $establishmnt->id)->get();
-                
-                $products_created = [];
+                $index = array_search($request->user()->id, json_decode($establishmnt->workers));
 
-                foreach ($request->drinkList as $drink) {
-                    foreach ($inventoryDrinkList as $inventoryDrink) {
-                        if($drink['drink_id'] == $inventoryDrink->drink_id){
+                if ($index !== false) {
+                    
+                    $userRoleTab = DB::table('users')
+                        ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                        ->join('user_roles', 'user_roles.id', '=', 'user_role_tabs.user_role_id')
+                        ->where('user_id',$request->user()->id)
+                        ->get();
+
+                    foreach($userRoleTab as $role){
+
+                        if($role->nameRole == "manager" || "store-manager"){
+                            
+                            $inventoryDrinkList = inventoryStore::where('establishment_id', $establishmnt->id)->get();
+                            
+                            $products_created = [];
+
+                            foreach ($request->drinkList as $drink) {
+                                foreach ($inventoryDrinkList as $inventoryDrink) {
+
+                                    if($drink['drink_id'] == $inventoryDrink->drink_id){
+                                        return response()->json([
+                                            'error'=>false,
+                                            'message'=> 'This product has been created, please delete it or update that', 
+                                            'data'=>$drink
+                                        ], 400);
+                                    }                        
+                                }
+
+                                $product = inventoryStore::create([
+                                    'quantity' => (integer) $drink['quantity'],
+                                    'price' => (double) $drink['price'],
+                                    'drink_id' => (integer) $drink['drink_id'],
+                                    'establishment_id' => $establishmnt->id,
+                                ]);
+                                array_push($products_created, $product);
+                            }              
+
+                            DB::commit();
                             return response()->json([
                                 'error'=>false,
-                                'message'=> 'This product has been created, please delete it or update that', 
-                                'data'=>$drink
-                            ], 400);
-                        }                        
+                                'message'=> 'Products created successfully in store', 
+                                'data'=>$products_created
+                            ], 200); 
+
+                        }else {
+                            return response()->json([
+                                'error'=>false,
+                                'message'=> "You're not authorized to create this ressource",
+                            ], 400); 
+                        }
                     }
+                }else {
+                    return response()->json([
+                        'error'=>false,
+                        'message'=> "You're not authorized to create this ressource",
+                    ], 400); 
+                }
+            }            
+            return response()->json([
+                'error'=>false,
+                'message'=> "You're not authorized to create this ressource",
+            ], 400);
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th->getMessage(),
+            ], 400);        
+        }
+    }
+    
+    
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function procurementInventoryStore(Request $request)
+    {
+        try {
+            
+            DB::beginTransaction();
 
-                    $product = inventoryStore::create([
-                        'quantity' => (integer) $drink['quantity'],
-                        'price' => (double) $drink['price'],
-                        'drink_id' => (integer) $drink['drink_id'],
-                        'establishment_id' => $establishmnt->id,
-                    ]);
-                    array_push($products_created, $product);
-                }              
+            $establishmnts = establishment::all();
 
-                DB::commit();
-                return response()->json([
-                    'error'=>false,
-                    'message'=> 'Products created successfully in store', 
-                    'data'=>$products_created
-                ], 200); 
+            foreach ($establishmnts as $establishmnt) {
 
-            }else {
-                return response()->json([
-                    'error'=>false,
-                    'message'=> "You're not authorized to create this ressource",
-                ], 400); 
-            }
+                $index = array_search($request->user()->id, json_decode($establishmnt->workers));
+
+                if ($index !== false) {
+                    
+                    $userRoleTab = DB::table('users')
+                        ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                        ->join('user_roles', 'user_roles.id', '=', 'user_role_tabs.user_role_id')
+                        ->where('user_id',$request->user()->id)
+                        ->get();
+
+                    foreach($userRoleTab as $role){
+
+                        if($role->nameRole == "manager" || "store-manager"){
+                            
+                            $inventoryStoreList = inventoryStore::where('establishment_id', $establishmnt->id)->get();
+                            
+                            $products_updated = [];
+
+                            foreach ($request->drinkList as $drink) {
+                                foreach ($inventoryStoreList as $inventoryStore) {
+
+                                    if($drink['drink_id'] == $inventoryStore->drink_id){
+                                        
+                                        $inventoryStore->quantity += (integer) $drink['quantity'];
+                                        $inventoryStore->price = (integer) $drink['price'] ?? $inventoryStore->price;
+                                        $inventoryStore->save();
+
+                                        array_push($products_updated, $inventoryStore);
+                                    }                        
+                                }
+                            }              
+                            DB::commit();
+                            return response()->json([
+                                'error'=>false,
+                                'message'=> 'Products updated successfully in store', 
+                                'data'=>$products_updated
+                            ], 200);
+                        }else {
+                            return response()->json([
+                                'error'=>false,
+                                'message'=> "You're not authorized to create this ressource",
+                            ], 400); 
+                        }
+                    }
+                }else {
+                    return response()->json([
+                        'error'=>false,
+                        'message'=> "You're not authorized to create this ressource",
+                    ], 400); 
+                }
+            }            
+            return response()->json([
+                'error'=>false,
+                'message'=> "You're not authorized to create this ressource",
+            ], 400);
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th->getMessage(),
+            ], 400);        
+        }
+    }
+    
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function procurementWarehouse(Request $request)
+    {
+        try {
+            
+            DB::beginTransaction();
+
+            $establishmnts = establishment::all();
+
+            foreach ($establishmnts as $establishmnt) {
+
+                $index = array_search($request->user()->id, json_decode($establishmnt->workers));
+
+                if ($index !== false) {
+                    
+                    $userRoleTab = DB::table('users')
+                        ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                        ->join('user_roles', 'user_roles.id', '=', 'user_role_tabs.user_role_id')
+                        ->where('user_id',$request->user()->id)
+                        ->get();
+
+                    foreach($userRoleTab as $role){
+
+                        if($role->nameRole == "manager" || "store-manager"){
+                            
+                            $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
+
+                            $inventoryStoreList = inventoryStore::where('establishment_id', $establishmnt->id)
+                                                    ->join('drinks', 'drinks.id', '=', 'inventory_stores.drink_id')
+                                                    ->get();
+                            $productsUpdated = [];
+
+                            foreach ($request->drinkList as $drink) {
+                                foreach ($inventoryStoreList as $inventoryStore) {
+
+                                    if($drink['drink_id'] == $inventoryStore->drink_id){
+
+                                        $isProductFound = false;
+                                        foreach ($inventoryDrinkList as $inventoryDrink) {
+
+                                            if( $drink['drink_id'] == $inventoryDrink->drink_id && ((integer) $inventoryStore->quantity - (integer) $drink['quantity'] >= 0)){
+
+
+                                                $inventoryDrink->quantity += ((integer) $drink['quantity'] * $inventoryStore->numberBottle);
+                                                $inventoryDrink->save();
+                                                
+
+                                                inventoryStore::where('id', $inventoryStore->id)
+                                                    ->update([
+                                                        "quantity" =>  (integer) $inventoryStore->quantity - (integer) $drink['quantity']
+                                                    ]);
+
+                                                $isProductFound =true;
+                                                array_push($productsUpdated, $inventoryDrink);
+                                            }
+                                        } 
+                                        if($isProductFound == false  && ((integer) $inventoryStore->quantity - (integer) $drink['quantity'] >= 0)) {
+                                            
+                                            $product = inventoryDrink::create([
+                                                'quantity' => (integer) $drink['quantity'] * (integer) $inventoryStore->numberBottle,
+                                                'price' => (double) $drink['price'],
+                                                'drink_id' => (integer) $drink['drink_id'],
+                                                'establishment_id' => $establishmnt->id,
+                                            ]);
+                                                                                        
+                                            inventoryStore::where('id', $inventoryStore->id)
+                                            ->update([
+                                                "quantity" => (integer) $inventoryStore->quantity - (integer) $drink['quantity']
+                                            ]);
+                                            array_push($productsUpdated, $product);
+                                        }
+                                    }                   
+                                }
+                            }
+                            if(count($productsUpdated) > 0){
+                                DB::commit();
+                                return response()->json([
+                                    'error'=>false,
+                                    'message'=> 'Products updated successfully', 
+                                    'data'=>$productsUpdated
+                                ], 200);
+                            }else{
+                                DB::commit();
+                                return response()->json([
+                                    'error'=>false,
+                                    'message'=> 'No Products updated', 
+                                    'data'=>$productsUpdated
+                                ], 200);
+                            }
+                        }else {
+                            return response()->json([
+                                'error'=>false,
+                                'message'=> "You're not authorized to create this ressource",
+                            ], 400); 
+                        }
+                    }
+                }else {
+                    return response()->json([
+                        'error'=>false,
+                        'message'=> "You're not authorized to create this ressource",
+                    ], 400); 
+                }
+            }            
+            return response()->json([
+                'error'=>false,
+                'message'=> "You're not authorized to create this ressource",
+            ], 400);
             
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -316,6 +597,75 @@ class productController extends Controller
                             'error'=>false,
                             'message'=> 'This product has been created, please delete it or update that', 
                             'data'=>$inventoryDrink
+                        ], 400);
+                    }                        
+                }
+                $product = inventoryDrink::create([
+                    'quantity' => (integer) $request->quantity,
+                    'price' => (double) $request->price,
+                    'drink_id' => (integer) $request->drink_id,
+                    'establishment_id' => $establishmnt->id,
+                ]);                
+
+                DB::commit();
+
+                return response()->json([
+                    'error'=>false,
+                    'message'=> 'Product created successfully', 
+                    'data'=>$product
+                ], 200); 
+
+            }else {
+                return response()->json([
+                    'error'=>false,
+                    'message'=> "You're not authorized to create this ressource",
+                ], 400); 
+            }
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th,
+            ], 400);        
+        }
+
+    }
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function productInStore(Request $request)
+    {
+        try {
+            
+                
+            DB::beginTransaction();
+            
+            $establishmnt = establishment::where('user_id',$request->user()->id)->first();
+
+            $userRoleTab = DB::table('users')
+                ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+                ->where('user_id',$request->user()->id)
+                ->first();
+
+            $userRole = userRole::where('id',$userRoleTab->user_role_id)
+                ->first();
+
+            // if($establishmnt->user_id == $request->user()->id){
+            if($establishmnt && $userRole->nameRole == "manager" || "barman"){
+                
+                $inventoryStoreList = inventoryStore::where('establishment_id', $establishmnt->id)->get();
+                
+                foreach ($inventoryStoreList as $inventoryStore) {
+                    if($request->drink_id == $inventoryStore->drink_id){
+                        return response()->json([
+                            'error'=>false,
+                            'message'=> 'This product has been created, please delete it or update that', 
+                            'data'=>$inventoryStore
                         ], 400);
                     }                        
                 }

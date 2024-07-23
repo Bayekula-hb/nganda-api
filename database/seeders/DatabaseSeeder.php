@@ -54,12 +54,16 @@ class DatabaseSeeder extends Seeder
                 "imageDrink" => asset('img/beaufort.png'),
                 "litrage" => 50,
                 "typeDrink" => "Bière normal",
+                "priorityDrink" => 0,
+                "numberBottle" => 20,
             ],
             [
                 "nameDrink" => "Skol",
                 "imageDrink" => asset('img/skol.png'),
                 "litrage" => 50,
                 "typeDrink" => "Bière normal",
+                "priorityDrink" => 0,
+                "numberBottle" => 12,
             ],
             [
                 "nameDrink" => "Heineken",

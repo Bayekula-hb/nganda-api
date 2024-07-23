@@ -11,6 +11,7 @@ use App\Http\Controllers\API\userRoleController;
 use App\Http\Middleware\createDrinkMiddleware;
 use App\Http\Middleware\drinkUpdatedImgMiddleware;
 use App\Http\Middleware\paymentMiddleware;
+use App\Http\Middleware\procurementProductByStoreMiddleware;
 use App\Http\Middleware\procurementProductMiddleware;
 use App\Http\Middleware\receiverRegisterMiddleware;
 use App\Http\Middleware\registerOneProductMiddleware;
@@ -18,6 +19,7 @@ use App\Http\Middleware\registerProductsMiddleware;
 use App\Http\Middleware\saleProductsMiddleware;
 use App\Http\Middleware\signMiddleware;
 use App\Http\Middleware\updatedDrinkImgMiddleware;
+use App\Http\Middleware\updateProductsStoreMiddleware;
 use App\Http\Middleware\userLoginMiddleware;
 use App\Http\Middleware\userRegisterMiddleware;
 use App\Http\Middleware\userUpdatePasswordMiddleware;
@@ -138,7 +140,12 @@ Route::prefix('v1.1')->group(function () {
             Route::get("", [productController::class, 'index']);
             Route::get("/all", [productController::class, 'allProducts']);
             Route::post("", [productController::class, 'store'])->middleware(registerProductsMiddleware::class);
-            Route::post("/add/store", [productController::class, 'storeToInventoryStore'])->middleware(registerProductsMiddleware::class);
+            
+            Route::post("/store", [productController::class, 'storeToInventoryStore'])->middleware(registerProductsMiddleware::class);
+            Route::put("/store/procurement", [productController::class, 'procurementInventoryStore'])->middleware(updateProductsStoreMiddleware::class);
+            Route::get("/store", [productController::class, 'allProductsInStore']);
+            Route::put("/store/procurement/warehouse", [productController::class, 'procurementWarehouse'])->middleware(procurementProductByStoreMiddleware::class);
+
             Route::post("/add", [productController::class, 'product'])->middleware(registerOneProductMiddleware::class);
             Route::put("/procurement", [productController::class, 'procurement'])->middleware(procurementProductMiddleware::class);
         });
