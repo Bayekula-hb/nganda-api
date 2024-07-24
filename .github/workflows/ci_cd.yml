@@ -37,7 +37,7 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
 
-    - name: Delete old docker images
+    - name: Delete old docker images uses
       run: |
         # List all images except the newly pulled one and delete them
         old_images=$(sudo docker images hobed24/nganda-api --format 'hobed24/nganda-api' | grep -v '0.0.1')
