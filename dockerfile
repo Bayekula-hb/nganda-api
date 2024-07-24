@@ -2,7 +2,7 @@
 FROM php:8.2-apache
 
 # Installer les extensions PHP et les dépendances requises
-RUN docker-php-ext-install pdo pdo_mysql
+# RUN docker-php-ext-install pdo pdo_mysql
 # RUN apt-get update && apt-get install -y \
 #     libpng-dev \
 #     libjpeg-dev \
@@ -12,6 +12,17 @@ RUN docker-php-ext-install pdo pdo_mysql
 #     && docker-php-ext-configure gd --with-freetype --with-jpeg \
 #     && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql zip \
 #     && pecl install xdebug && docker-php-ext-enable xdebug
+RUN set -x \
+    && apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    unzip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql zip \
+    && pecl install xdebug && docker-php-ext-enable xdebug \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
