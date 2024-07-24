@@ -71,9 +71,9 @@ jobs:
         DIGITAL_OCEAN_USERNAME: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
         DIGITAL_OCEAN_SSH_KEY: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
       run: |
-        echo "${{ secrets.DIGITAL_OCEAN_SSH_KEY }}" > key.pem
-        chmod 600 key.pem
-        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.DIGITAL_OCEAN_USERNAME }}@${{ secrets.DIGITAL_OCEAN_HOST }} << 'EOF'
+        echo "${{ secrets.DIGITAL_OCEAN_SSH_KEY }}" > id_rsa.pem
+        chmod 600 id_rsa.pem
+        ssh -o StrictHostKeyChecking=no -i id_rsa.pem ${{ secrets.DIGITAL_OCEAN_USERNAME }}@${{ secrets.DIGITAL_OCEAN_HOST }} << 'EOF'
           docker pull ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
           docker stop nganda-api || true
           docker rm nganda-api || true
