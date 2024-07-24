@@ -7,7 +7,9 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+  # build-and-deploy:
+  #   runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -71,14 +73,14 @@ jobs:
         DIGITAL_OCEAN_USERNAME: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
         DIGITAL_OCEAN_SSH_KEY: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
       run: |
-        echo "${{ secrets.DIGITAL_OCEAN_SSH_KEY }}" > id_rsa
-        chmod 600 id_rsa
+        echo "${{ secrets.DIGITAL_OCEAN_SSH_KEY }}" > id_rsa.pem
+        chmod 600 id_rsa.pem
         
         # Tester la connexion SSH    
-        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.DIGITAL_OCEAN_USERNAME }}@${{ secrets.DIGITAL_OCEAN_HOST }} "echo 'SSH connection successful!'"    
+        ssh -o StrictHostKeyChecking=no -i id_rsa.pem ${{ secrets.DIGITAL_OCEAN_USERNAME }}@${{ secrets.DIGITAL_OCEAN_HOST }} "echo 'SSH connection successful!'"    
         
         # Déploiement
-        ssh -o StrictHostKeyChecking=no -i id_rsa ${{ secrets.DIGITAL_OCEAN_USERNAME }}@${{ secrets.DIGITAL_OCEAN_HOST }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i id_rsa.pem ${{ secrets.DIGITAL_OCEAN_USERNAME }}@${{ secrets.DIGITAL_OCEAN_HOST }} << 'EOF'
           docker pull ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
           docker stop nganda-api || true
           docker rm nganda-api || true
