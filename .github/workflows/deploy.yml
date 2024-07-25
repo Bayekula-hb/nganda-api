@@ -26,6 +26,12 @@ jobs:
         cp .env.example .env
         php artisan key:generate
 
+    - name: Ensure Repository Cloned
+      run: |
+        if [ ! -d "/var/www/laravel/.git" ]; then
+         git clone https://github.com/Bayekula-hb/nganda-api.git /var/www/laravel
+        fi
+
     - name: Deploy to DigitalOcean
       run: |
             cd /var/www/laravel
