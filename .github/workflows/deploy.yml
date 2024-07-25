@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        ref: main  # Spécifie la branche 'main'
 
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
