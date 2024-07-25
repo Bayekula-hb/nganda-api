@@ -14,6 +14,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+    
+    
+    - name: Fix Docker permissions
+      run: |
+        sudo usermod -aG docker $USER
+        sudo chmod 660 /var/run/docker.sock
+        sudo chown root:docker /var/run/docker.sock
 
     # - name: Set up Docker Buildx
     #   uses: docker/setup-buildx-action@v2
@@ -47,15 +54,9 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
 
-    - name: Delete old docker images uses
+    - name: Delete old docker images
       run: |
-        # List all images except the newly pulled one and delete them
-        docker system prune -a  || true
-        # old_images=$(sudo docker images ${{ secrets.DOCKER_USERNAME }}/nganda-api --format '${{ secrets.DOCKER_USERNAME }}/nganda-api' | grep -v '0.0.1')
-        # if [ ! -z "$old_images" ]; then
-        #     # sudo docker rmi $old_images || true
-        #     docker system prune -a
-        # fi
+          sudo docker system prune -a -f || true
 
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
