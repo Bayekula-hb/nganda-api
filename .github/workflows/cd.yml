@@ -1,0 +1,44 @@
+# name: Continuous deployment
+
+# on:
+#   workflow_run:
+#     workflows: ["CI Pipeline"]
+#     types:
+#       - completed
+
+# permissions:
+#   contents: read
+
+# jobs:
+#   build:
+#     runs-on: self-hosted
+
+#     steps:
+#       - name: Pull docker image
+#         run: sudo docker pull hobed24/nzela-hub-api:0.0.1
+
+#       - name: Delete old docker container
+#         run: sudo docker rm -f nzela-hub-api-container || true 
+
+#       - name: Delete old docker images
+#         run: |
+#           # List all images except the newly pulled one and delete them
+#           old_images=$(sudo docker images hobed24/nzela-hub-api --format 'hobed24/nzela-hub-api' | grep -v '0.0.1')
+#           if [ ! -z "$old_images" ]; then
+#             # sudo docker rmi $old_images || true
+#             docker system prune -a
+#           fi
+
+#       - name: Run Docker Container
+#         run: |
+#             sudo docker run -d -p 8300:8300 \
+#             --name nzela-hub-api-container \
+#             --network nzela-hub-network \
+#               -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+#               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+#               -e DB_NAME=${{ secrets.DB_NAME }} \
+#               -e DB_HOST=${{ secrets.DB_HOST_IP }}  \
+#               -e ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}  \
+#               -e ADMIN_MAIL=${{ secrets.ADMIN_MAIL }}  \
+#               -e JWT_SECRET=${{ secrets.JWT_SECRET }}  \
+#               hobed24/nzela-hub-api:0.0.1
