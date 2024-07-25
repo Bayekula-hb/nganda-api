@@ -13,12 +13,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       with:
-        ref: main  # Spécifie la branche 'main'
+        ref: main
 
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2'  # Spécifiez la version de PHP utilisée par votre application
+        php-version: '8.2'
 
     - name: Install dependencies
       run: |
