@@ -28,10 +28,10 @@ jobs:
 
     - name: Deploy to DigitalOcean
       run: |
-          ssh -i ${{ secrets.DIGITALOCEAN_SSH_KEY }} ${{ secrets.DIGITALOCEAN_USERNAME }}@${{ secrets.DIGITALOCEAN_HOST }} << 'EOF'
+        #   ssh -i ${{ secrets.DIGITALOCEAN_SSH_KEY }} ${{ secrets.DIGITALOCEAN_USERNAME }}@${{ secrets.DIGITALOCEAN_HOST }} << 'EOF'
             cd /var/www/html/laravel
             git pull origin main
             composer install --no-dev
             php artisan migrate --force
             php artisan config:cache
-          EOF
+        #   EOF
