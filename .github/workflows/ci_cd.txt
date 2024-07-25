@@ -41,18 +41,26 @@ jobs:
     #     restore-keys: |
     #       ${{ runner.os }}-docker-
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PWD }}
+    - uses: actions/checkout@v2
+    - name: Login DockerHub
+      env: 
+       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+       DOCKER_PASSWORD: ${{ secrets.DOCKER_PWD }}
+      run: docker login -u $DOCKER_USERNAME -p $
+      
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
+    - name: Build Docker Image
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1 .
+
+    - name: Push to Docker Hub 
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
+
+    # - name: Build and push Docker image
+    #   uses: docker/build-push-action@v4
+    #   with:
+    #     context: .
+    #     push: true
+    #     tags: ${{ secrets.DOCKER_USERNAME }}/nganda-api:0.0.1
 
     - name: Delete old docker images
       run: |
