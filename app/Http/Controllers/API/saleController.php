@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\drink;
 use App\Models\establishment;
+use App\Models\historicInventoryDrink;
 use App\Models\inventoryDrink;
 use App\Models\sale;
 use App\Models\User;
@@ -382,9 +383,18 @@ class saleController extends Controller
                                         'establishment_id' => $establishmnt->id,
                                     ]);
                                     
-                                    //Reduce the quantity after sale
                                     $inventoryDrink->quantity -= $drink['quantity'];
-                                    $inventoryDrink->save();
+                                    $inventoryDrink->save();                                    
+                                                        
+                                    historicInventoryDrink::create([                        
+                                        'quantity' => (integer) $drink['quantity'],
+                                        'price' => (double) $inventoryDrink->price,
+                                        'drink_id' => (integer) $inventoryDrink->drink_id,
+                                        'establishment_id' => $establishmnt->id,
+                                        'type_operator' => 'output',
+                                        'user_id' => $request->user()->id,
+                                    ]); 
+
 
                                     array_push($productsSale, $saleCreated);
                                 }                        

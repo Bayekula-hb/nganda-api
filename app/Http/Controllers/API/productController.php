@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\drink;
 use App\Models\establishment;
+use App\Models\historicInventoryDrink;
+use App\Models\historicInventoryStore;
 use App\Models\inventoryDrink;
 use App\Models\inventoryStore;
 use App\Models\User;
@@ -159,10 +161,10 @@ class productController extends Controller
             $userRole = userRole::where('id',$userRoleTab->user_role_id)
                 ->first();
 
-            // if($establishmnt->user_id == $request->user()->id){
             if($establishmnt && $userRole->nameRole == "manager" || "barman"){
                 
                 $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
+                $inventoryDrinkHistorics = historicInventoryDrink::where('establishment_id', $establishmnt->id)->get();
                 
                 $products_created = [];
 
@@ -182,6 +184,14 @@ class productController extends Controller
                         'price' => (double) $drink['price'],
                         'drink_id' => (integer) $drink['drink_id'],
                         'establishment_id' => $establishmnt->id,
+                    ]);
+                    historicInventoryDrink::create([                        
+                        'quantity' => (integer) $drink['quantity'],
+                        'price' => (double) $drink['price'],
+                        'drink_id' => (integer) $drink['drink_id'],
+                        'establishment_id' => $establishmnt->id,
+                        'type_operator' => 'input',
+                        'user_id' => $request->user()->id,
                     ]);
                     array_push($products_created, $product);
                 }              
@@ -261,6 +271,14 @@ class productController extends Controller
                                     'price' => (double) $drink['price'],
                                     'drink_id' => (integer) $drink['drink_id'],
                                     'establishment_id' => $establishmnt->id,
+                                ]);
+                                historicInventoryStore::create([                        
+                                    'quantity' => (integer) $drink['quantity'],
+                                    'price' => (double) $drink['price'],
+                                    'drink_id' => (integer) $drink['drink_id'],
+                                    'establishment_id' => $establishmnt->id,
+                                    'type_operator' => 'input',
+                                    'user_id' => $request->user()->id,
                                 ]);
                                 array_push($products_created, $product);
                             }              
@@ -344,6 +362,16 @@ class productController extends Controller
                                         $inventoryStore->quantity += (integer) $drink['quantity'];
                                         $inventoryStore->price = (integer) $drink['price'] ?? $inventoryStore->price;
                                         $inventoryStore->save();
+
+                                                        
+                                        historicInventoryStore::create([                        
+                                            'quantity' => (integer) $drink['quantity'],
+                                            'price' => (double) $drink['price'] ?? $inventoryStore->price,
+                                            'drink_id' => (integer) $inventoryStore->drink_id,
+                                            'establishment_id' => $establishmnt->id,
+                                            'type_operator' => 'input',
+                                            'user_id' => $request->user()->id,
+                                        ]); 
 
                                         array_push($products_updated, $inventoryStore);
                                     }                        
@@ -439,9 +467,28 @@ class productController extends Controller
                                                 inventoryStore::where('id', $inventoryStore->id)
                                                     ->update([
                                                         "quantity" =>  (integer) $inventoryStore->quantity - (integer) $drink['quantity']
-                                                    ]);
+                                                ]);
 
                                                 $isProductFound =true;
+                                                                
+                                                historicInventoryDrink::create([                        
+                                                    'quantity' => (integer) $drink['quantity'] * $inventoryStore->numberBottle,
+                                                    'price' => (double) $inventoryDrink->price,
+                                                    'drink_id' => (integer) $inventoryDrink->drink_id,
+                                                    'establishment_id' => $establishmnt->id,
+                                                    'type_operator' => 'input',
+                                                    'user_id' => $request->user()->id,
+                                                ]);  
+
+                                                historicInventoryStore::create([                        
+                                                    'quantity' => (integer) $drink['quantity'],
+                                                    'price' => (double) $inventoryDrink->price,
+                                                    'drink_id' => (integer) $inventoryDrink->drink_id,
+                                                    'establishment_id' => $establishmnt->id,
+                                                    'type_operator' => 'output',
+                                                    'user_id' => $request->user()->id,
+                                                ]);  
+
                                                 array_push($productsUpdated, $inventoryDrink);
                                             }
                                         } 
@@ -453,11 +500,31 @@ class productController extends Controller
                                                 'drink_id' => (integer) $drink['drink_id'],
                                                 'establishment_id' => $establishmnt->id,
                                             ]);
+                                            
                                                                                         
                                             inventoryStore::where('id', $inventoryStore->id)
                                             ->update([
                                                 "quantity" => (integer) $inventoryStore->quantity - (integer) $drink['quantity']
                                             ]);
+                                                            
+                                            historicInventoryDrink::create([                        
+                                                'quantity' => (integer) $drink['quantity'] * $inventoryStore->numberBottle,
+                                                'price' => (double) $drink['price'],
+                                                'drink_id' => (integer) $drink["drink_id"],
+                                                'establishment_id' => $establishmnt->id,
+                                                'type_operator' => 'input',
+                                                'user_id' => $request->user()->id,
+                                            ]); 
+
+                                            historicInventoryStore::create([                        
+                                                'quantity' => (integer) $drink['quantity'],
+                                                'price' => (double) $inventoryStore->price,
+                                                'drink_id' => (integer) $inventoryStore->drink_id,
+                                                'establishment_id' => $establishmnt->id,
+                                                'type_operator' => 'output',
+                                                'user_id' => $request->user()->id,
+                                            ]); 
+
                                             array_push($productsUpdated, $product);
                                         }
                                     }                   
@@ -530,7 +597,6 @@ class productController extends Controller
             $userRole = userRole::where('id',$userRoleTab->user_role_id)
                 ->first();
 
-            // if($establishmnt->user_id == $request->user()->id){
             if($establishmnt && $userRole->nameRole == "manager" || "barman"){
                 $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
 
@@ -542,9 +608,17 @@ class productController extends Controller
 
                             $inventoryDrink->quantity += (integer) $drink['quantity'];
                             $inventoryDrink->save();
-                            
-                            array_push($productsUpdated, $inventoryDrink);
 
+                            historicInventoryDrink::create([                        
+                                'quantity' => (integer) (integer) $drink['quantity'],
+                                'price' => (double) $inventoryDrink->price,
+                                'drink_id' => (integer) $inventoryDrink->drink_id,
+                                'establishment_id' => $establishmnt->id,
+                                'type_operator' => 'input',
+                                'user_id' => $request->user()->id,
+                            ]);
+
+                            array_push($productsUpdated, $inventoryDrink);
                         }                        
                     }
                 }              
@@ -605,7 +679,16 @@ class productController extends Controller
                     'price' => (double) $request->price,
                     'drink_id' => (integer) $request->drink_id,
                     'establishment_id' => $establishmnt->id,
-                ]);                
+                ]);   
+                
+                historicInventoryDrink::create([                        
+                    'quantity' => (integer) $request->quantity,
+                    'price' => (double) $request->price,
+                    'drink_id' => (integer) $request->drink_id,
+                    'establishment_id' => $establishmnt->id,
+                    'type_operator' => 'input',
+                    'user_id' => $request->user()->id,
+                ]);             
 
                 DB::commit();
 
@@ -655,7 +738,6 @@ class productController extends Controller
             $userRole = userRole::where('id',$userRoleTab->user_role_id)
                 ->first();
 
-            // if($establishmnt->user_id == $request->user()->id){
             if($establishmnt && $userRole->nameRole == "manager" || "barman"){
                 
                 $inventoryStoreList = inventoryStore::where('establishment_id', $establishmnt->id)->get();
@@ -674,7 +756,16 @@ class productController extends Controller
                     'price' => (double) $request->price,
                     'drink_id' => (integer) $request->drink_id,
                     'establishment_id' => $establishmnt->id,
-                ]);                
+                ]);  
+                
+                historicInventoryDrink::create([                        
+                    'quantity' => (integer) $request->quantity,
+                    'price' => (double) $request->price,
+                    'drink_id' => (integer) $request->drink_id,
+                    'establishment_id' => $establishmnt->id,
+                    'type_operator' => 'input',
+                    'user_id' => $request->user()->id,
+                ]);              
 
                 DB::commit();
 
