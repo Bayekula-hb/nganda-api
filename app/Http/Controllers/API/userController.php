@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Event\Code\Throwable;
 
-use Kreait\Firebase\Factory;
-use Kreait\Firebase\Auth;
-use Kreait\Laravel\Firebase\Facades\Firebase;
+// use Kreait\Firebase\Factory;
+// use Kreait\Firebase\Auth;
+// use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class userController extends Controller
 {
@@ -24,10 +24,10 @@ class userController extends Controller
     // {
     //     $this->auth = (new Factory)->withServiceAccount(__DIR__.'/path/to/firebase_credentials.json')->createAuth();
     // }
-    public function __construct()
-    {
-      $this->auth = Firebase::auth();
-    }
+    // public function __construct()
+    // {
+    //   $this->auth = Firebase::auth();
+    // }
 
     /**
      * Display a listing of the resource.
