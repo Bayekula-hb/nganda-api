@@ -370,7 +370,7 @@ class DatabaseSeeder extends Seeder
                 'userName' => 'jacobitkashala@gmail.com',
                 'gender' => 'M',
                 'phoneNumber' => '+243825135297',
-                'email' => 'hobedbayekula@gmail.com',
+                'email' => 'jacobitkashala@gmail.com',
                 'password' => bcrypt('jacobitkashala@'),
             ],
         ]);
