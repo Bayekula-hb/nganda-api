@@ -19,9 +19,7 @@ class inventoryStore extends Model
         'quantity',
         'price',
         'drink_id',
-        'type_operator',
         'establishment_id',
-        'user_id',
     ];
     protected $hidden = [
         'created_at',
@@ -42,9 +40,4 @@ class inventoryStore extends Model
     {
         return $this->belongsTo(establishment::class);
     }    
-            
-    public function users(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 }

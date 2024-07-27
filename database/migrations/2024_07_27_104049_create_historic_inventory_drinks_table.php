@@ -14,16 +14,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventory_stores', function (Blueprint $table) {
+        Schema::create('historic_inventory_drinks', function (Blueprint $table) {
             $table->id();
             $table->integer('quantity')->nullable(false);
             $table->double('price')->nullable(false);
+            $table->double('type_operator')->nullable(false);
             $table->foreignIdFor(drink::class)
                 ->references('id')
                 ->on('drinks');
             $table->foreignIdFor(establishment::class)
                 ->references('id')
                 ->on('establishments');
+            $table->foreignIdFor(User::class)
+                    ->references('id')
+                    ->on('users');
+            $table->timestamps();
         });
     }
 
@@ -32,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventory_stores');
+        Schema::dropIfExists('historic_inventory_drinks');
     }
 };

@@ -18,16 +18,12 @@ return new class extends Migration
             $table->id();
             $table->integer('quantity')->nullable(false);
             $table->double('price')->nullable(false);
-            $table->double('type_operator')->nullable(false);
             $table->foreignIdFor(drink::class)
                 ->references('id')
                 ->on('drinks');
             $table->foreignIdFor(establishment::class)
                 ->references('id')
                 ->on('establishments');
-            $table->foreignIdFor(User::class)
-                    ->references('id')
-                    ->on('users');
             $table->timestamps();
         });
     }

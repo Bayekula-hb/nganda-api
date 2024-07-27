@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class inventoryDrink extends Model
+class historicInventoryDrink extends Model
 {
+    use HasFactory;
+
+    
     use HasFactory;
     /**
      * The attributes that are mass assignable.
@@ -19,7 +22,9 @@ class inventoryDrink extends Model
         'quantity',
         'price',
         'drink_id',
+        'type_operator',
         'establishment_id',
+        'user_id',
     ];
     protected $hidden = [
         'created_at',
@@ -39,5 +44,10 @@ class inventoryDrink extends Model
     public function establishment(): BelongsTo
     {
         return $this->belongsTo(establishment::class);
+    }
+            
+    public function users(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
