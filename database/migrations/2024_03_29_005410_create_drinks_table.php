@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('drinks', function (Blueprint $table) {
             $table->id();
             $table->string('nameDrink');
-            $table->string('imageDrink');
-            $table->string('litrage');
-            $table->string('typeDrink');
+            $table->string('imageDrink')->nullable(true);
+            $table->string('litrage')->nullable(true);
+            $table->string('typeDrink')->nullable(true);
             $table->integer('priorityDrink')->nullable(false)->default(0);
             $table->integer('numberBottle')->nullable(false)->default(12);
             $table->timestamps();
