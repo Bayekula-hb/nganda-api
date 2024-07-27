@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignIdFor(inventoryDrink::class)
                 ->references('id')
                 ->on('inventory_drinks');
+                $table->softDeletes();
             $table->timestamps();
         });
     }

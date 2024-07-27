@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('number_month');
             $table->string('status');
             $table->string('ref_flexpay');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

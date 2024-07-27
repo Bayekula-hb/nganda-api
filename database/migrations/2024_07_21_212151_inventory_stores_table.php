@@ -24,6 +24,9 @@ return new class extends Migration
             $table->foreignIdFor(establishment::class)
                 ->references('id')
                 ->on('establishments');
+            
+                $table->softDeletes();
+                $table->timestamps();
         });
     }
 

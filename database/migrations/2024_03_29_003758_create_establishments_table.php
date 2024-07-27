@@ -30,6 +30,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class)
                 ->references('id')
                 ->on('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

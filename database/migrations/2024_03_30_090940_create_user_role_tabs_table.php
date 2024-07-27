@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignIdFor(userRole::class)
                 ->references('id')
                 ->on('user_roles');
+                $table->softDeletes();
             $table->timestamps();
         });
     }

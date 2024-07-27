@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('typeDrink')->nullable(true);
             $table->integer('priorityDrink')->nullable(false)->default(0);
             $table->integer('numberBottle')->nullable(false)->default(12);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

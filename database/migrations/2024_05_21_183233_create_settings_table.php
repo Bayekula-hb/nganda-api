@@ -16,6 +16,7 @@ return new class extends Migration
             $table->json('type_subscription')->nullable();
             $table->integer('rate')->nullable();
             $table->json('settings')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
