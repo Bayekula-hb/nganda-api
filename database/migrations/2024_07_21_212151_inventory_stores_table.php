@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->integer('quantity')->nullable(false);
             $table->double('price')->nullable(false);
+            $table->double('type_operator')->nullable(false);
             $table->foreignIdFor(drink::class)
                 ->references('id')
                 ->on('drinks');

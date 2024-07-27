@@ -24,6 +24,7 @@ return new class extends Migration
             $table->json('workers')->nullable();
             $table->json('workingDays')->nullable();
             $table->boolean('isOnDemonstration')->default(true);
+            $table->boolean('isActive')->default(false);
             $table->date('subscriptionExpiryDate')->nullable()->default(Carbon::now()->addWeeks(2));
             $table->json('settings')->nullable();
             $table->foreignIdFor(User::class)

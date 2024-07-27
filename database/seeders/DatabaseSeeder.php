@@ -46,16 +46,28 @@ class DatabaseSeeder extends Seeder
                 "nameRole" => "store-manager",
                 "descriptionRole" => "Store manager",
             ],
+            [
+                "nameRole" => "supervisor",
+                "descriptionRole" => "Superviseur",
+            ],
         ]);
 
         DB::table('drinks')->insert([
             [
-                "nameDrink" => "Beaufort",
+                "nameDrink" => "Beaufort petit",
                 "imageDrink" => asset('img/beaufort.png'),
                 "litrage" => 50,
                 "typeDrink" => "Bière normal",
                 "priorityDrink" => 0,
-                "numberBottle" => 20,
+                "numberBottle" => 24,
+            ],
+            [
+                "nameDrink" => "Beaufort Grand",
+                "imageDrink" => asset('img/beaufort.png'),
+                "litrage" => 50,
+                "typeDrink" => "Bière normal",
+                "priorityDrink" => 0,
+                "numberBottle" => 12,
             ],
             [
                 "nameDrink" => "Skol",
@@ -66,19 +78,37 @@ class DatabaseSeeder extends Seeder
                 "numberBottle" => 12,
             ],
             [
-                "nameDrink" => "Heineken",
+                "nameDrink" => "Heineken Petit",
                 "imageDrink" => asset('img/heineken.png'),
                 "litrage" => 50,
                 "typeDrink" => "Bière normal",
             ],
             [
-                "nameDrink" => "Primus",
+                "nameDrink" => "Heineken Grand",
+                "imageDrink" => asset('img/heineken.png'),
+                "litrage" => 50,
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Primus petit",
                 "imageDrink" => asset('img/primus.jpg'),
                 "litrage" => 50,
                 "typeDrink" => "Bière normal",
             ],
             [
-                "nameDrink" => "Legend",
+                "nameDrink" => "Primus Victoire",
+                "imageDrink" => "",
+                "litrage" => 50,
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Primus Grand",
+                "imageDrink" => asset('img/primus.jpg'),
+                "litrage" => 50,
+                "typeDrink" => "Bière normal",
+            ],
+            [
+                "nameDrink" => "Legend Petit",
                 "imageDrink" => asset('img/legend.png'),
                 "litrage" => 50,
                 "typeDrink" => "Bière normal",
@@ -120,16 +150,30 @@ class DatabaseSeeder extends Seeder
                 "typeDrink" => "Bière normal",
             ],
             [
-                "nameDrink" => "Turbo",
+                "nameDrink" => "Turbo King Pt",
                 "imageDrink" => asset('img/turbo.png'),
                 "litrage" => 50,
                 "typeDrink" => "Bière brune",
             ],
             [
-                "nameDrink" => "Legende",
+                "nameDrink" => "Turbo King Grand",
+                "imageDrink" => asset('img/turbo.png'),
+                "litrage" => 50,
+                "typeDrink" => "Bière brune",
+            ],
+            [
+                "nameDrink" => "Legende Grand",
                 "imageDrink" => asset('img/legende.png'),
                 "litrage" => 50,
                 "typeDrink" => "Bière brune",
+                "numberBottle" => 12
+            ],
+            [
+                "nameDrink" => "Legende petit",
+                "imageDrink" => asset('img/legende.png'),
+                "litrage" => 50,
+                "typeDrink" => "Bière brune",
+                "numberBottle" => 24
             ],
             [
                 "nameDrink" => "Doppel",
@@ -166,12 +210,32 @@ class DatabaseSeeder extends Seeder
                 "imageDrink" => asset('img/sprite.png'),
                 "litrage" => 50,
                 "typeDrink" => "Sucrée",
+                "priorityDrink" => 0,
+                "numberBottle" => 24,
             ],
             [
-                "nameDrink" => "Coca-cola",
+                "nameDrink" => "Coca-cola Petit",
                 "imageDrink" => asset('img/coca_cola.png'),
                 "litrage" => 50,
                 "typeDrink" => "Sucrée",
+                "priorityDrink" => 0,
+                "numberBottle" => 24,
+            ],
+            [
+                "nameDrink" => "Coca-cola Grand",
+                "imageDrink" => asset('img/coca_cola.png'),
+                "litrage" => 50,
+                "typeDrink" => "Sucrée",
+                "priorityDrink" => 0,
+                "numberBottle" => 12,
+            ],
+            [
+                "nameDrink" => "Top Grand",
+                "imageDrink" => "",
+                "litrage" => 50,
+                "typeDrink" => "Sucrée",
+                "priorityDrink" => 0,
+                "numberBottle" => 12,
             ],
             [
                 "nameDrink" => "Vital'o",
@@ -191,6 +255,46 @@ class DatabaseSeeder extends Seeder
                 "litrage" => 50,
                 "typeDrink" => "Sucrée",
             ],
+            [
+                "nameDrink" => "Red bull",
+                "imageDrink" => "",
+                "litrage" => 50,
+                "typeDrink" => "Sucré",
+                "priorityDrink" => 0,
+                "numberBottle" => 20,
+            ],
+            [
+                "nameDrink" => "Exo",
+                "imageDrink" => "",
+                "litrage" => 50,
+                "typeDrink" => "Sucré",
+                "priorityDrink" => 0,
+                "numberBottle" => 24,
+            ],
+            [
+                "nameDrink" => "Bouteille d'eau",
+                "imageDrink" => "",
+                "litrage" => 50,
+                "typeDrink" => "Eau",
+                "priorityDrink" => 0,
+                "numberBottle" => 12,
+            ],
+            [
+                "nameDrink" => "Mutzing",
+                "imageDrink" => "",
+                "litrage" => 50,
+                "typeDrink" => "Boisson",
+                "priorityDrink" => 0,
+                "numberBottle" => 20,
+            ],
+            [
+                "nameDrink" => "Likofi",
+                "imageDrink" => "",
+                "litrage" => 50,
+                "typeDrink" => "Boisson",
+                "priorityDrink" => 0,
+                "numberBottle" => 20,
+            ],
         ]);
 
         
@@ -205,6 +309,16 @@ class DatabaseSeeder extends Seeder
                 'email' => 'hobedbayekula@gmail.com',
                 'password' => bcrypt('secret0606'),
             ],
+            [
+                'lastName' => 'serge',
+                'firstName' => 'kashala',
+                'middleName' => 'jacobit',
+                'userName' => 'jacobitkashala@gmail.com',
+                'gender' => 'M',
+                'phoneNumber' => '+243825135297',
+                'email' => 'hobedbayekula@gmail.com',
+                'password' => bcrypt('jacobitkashala@'),
+            ],
         ]);
 
 
@@ -212,6 +326,20 @@ class DatabaseSeeder extends Seeder
             [
                 'user_id' => 1,
                 'user_role_id' => 1,
+            ],
+            [
+                'user_id' => 2,
+                'user_role_id' => 1,
+            ],
+        ]);
+
+        DB::table('establishments')->insert([
+            [
+                'nameEtablishment' => "Nganda Bar App",
+                'address' => "Nganda Bar 243, Kinshasa/Congo",
+                'workers' => [1, 2],
+                'subscriptionExpiryDate' => "2080-12-31",
+                'user_id' => 1,
             ],
         ]);
 

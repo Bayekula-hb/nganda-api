@@ -26,6 +26,7 @@ class establishment extends Model
         'workers',
         'workingDays',
         'isOnDemonstration',
+        'isActive',
         'subscriptionExpiryDate',
         'settings',
         'user_id',
