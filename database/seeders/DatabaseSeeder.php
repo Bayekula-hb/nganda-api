@@ -391,7 +391,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nameEtablishment' => "Nganda Bar App",
                 'address' => "Nganda Bar 243, Kinshasa/Congo",
-                'workers' => [1, 2],
+                'workers' => json_encode([1, 2]),
                 'subscriptionExpiryDate' => "2080-12-31",
                 'user_id' => 1,
             ],
