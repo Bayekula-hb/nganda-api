@@ -34,7 +34,7 @@ class drinkController extends Controller
         }
     }
 
-    //Get all product
+    //Search Drink
     public function search(Request $request) 
     {
         try {

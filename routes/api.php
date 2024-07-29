@@ -17,6 +17,7 @@ use App\Http\Middleware\receiverRegisterMiddleware;
 use App\Http\Middleware\registerOneProductMiddleware;
 use App\Http\Middleware\registerProductsMiddleware;
 use App\Http\Middleware\saleProductsMiddleware;
+use App\Http\Middleware\saleStatisticsMiddleware;
 use App\Http\Middleware\searchDrinkMiddleware;
 use App\Http\Middleware\signMiddleware;
 use App\Http\Middleware\updatedDrinkImgMiddleware;
@@ -166,6 +167,7 @@ Route::prefix('v1.1')->group(function () {
             Route::get("", [saleController::class, 'index']);
             Route::get("/statistics", [saleController::class, 'statistics']);
             Route::get("/statistics/{startDate}/{endDate}", [saleController::class, 'statisticByDate']);
+            Route::post("/statistics", [saleController::class, 'statisticInIntervaleByDate'])->middleware(saleStatisticsMiddleware::class);
             Route::get("/statistics-by-date/{endDate}", [saleController::class, 'statisticEndDateWithSixPreviousDays']);
             Route::post("", [saleController::class, 'store'])->middleware(saleProductsMiddleware::class);
             // Route::put("", [saleController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
