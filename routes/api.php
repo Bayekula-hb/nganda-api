@@ -17,6 +17,7 @@ use App\Http\Middleware\receiverRegisterMiddleware;
 use App\Http\Middleware\registerOneProductMiddleware;
 use App\Http\Middleware\registerProductsMiddleware;
 use App\Http\Middleware\saleProductsMiddleware;
+use App\Http\Middleware\searchDrinkMiddleware;
 use App\Http\Middleware\signMiddleware;
 use App\Http\Middleware\updatedDrinkImgMiddleware;
 use App\Http\Middleware\updateProductsStoreMiddleware;
@@ -143,7 +144,7 @@ Route::prefix('v1.1')->group(function () {
             
             Route::post("/store", [productController::class, 'storeToInventoryStore'])->middleware(registerProductsMiddleware::class);
             Route::put("/store/procurement", [productController::class, 'procurementInventoryStore'])->middleware(updateProductsStoreMiddleware::class);
-            Route::get("/store", [productController::class, 'allProductsInStore']);
+            Route::get("/store/{current_page}", [productController::class, 'allProductsInStore']);
             Route::put("/store/procurement/warehouse", [productController::class, 'procurementWarehouse'])->middleware(procurementProductByStoreMiddleware::class);
 
             Route::post("/add", [productController::class, 'product'])->middleware(registerOneProductMiddleware::class);
@@ -154,6 +155,7 @@ Route::prefix('v1.1')->group(function () {
         {
             Route::get("/{current_page}", [drinkController::class, 'index']);
             Route::post("/", [drinkController::class, 'store'])->middleware(createDrinkMiddleware::class);
+            Route::post("/search", [drinkController::class, 'search'])->middleware(searchDrinkMiddleware::class);
             Route::put("", [drinkController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
             Route::put("/{id}", [drinkController::class, 'updateDrink'])->middleware(updatedDrinkImgMiddleware::class);
         });

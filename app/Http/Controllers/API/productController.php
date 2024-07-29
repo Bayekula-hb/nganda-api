@@ -34,7 +34,7 @@ class productController extends Controller
 
                     $inventoryDrink  = inventoryDrink::where('establishment_id', $establishmnt->id)
                                             ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
-                                            ->paginate(10, ['*'], 'page', $current_page);
+                                            ->paginate(25, ['*'], 'page', $current_page);
 
                     return response()->json([
                         'error'=>false,
@@ -82,11 +82,12 @@ class productController extends Controller
     }
 
     //Get all products
-    public function allProductsInStore(Request $request) 
+    public function allProductsInStore(Request $request, $current_page) 
     {
         try {   
 
-            $establishmnts = establishment::all();
+            $establishmnts = establishment::all();            
+            $current_page = $current_page > 0 ? $current_page : 1;
 
             foreach ($establishmnts as $establishmnt) {
 
@@ -104,11 +105,11 @@ class productController extends Controller
                                         ->get();
                     foreach($userRole as $role){
 
-                        if($role->nameRole == "manager" || "store-manager"){
+                        if($role->nameRole == "manager" || "store-manager" || "admin"){
 
                             $inventoryStore  = inventoryStore::where('establishment_id', $establishmnt->id)
                                                     ->join('drinks', 'inventory_stores.drink_id', '=', 'drinks.id')
-                                                    ->paginate(15);
+                                                    ->paginate(25, ['*'], 'page', $current_page);
 
                             return response()->json([
                                 'error'=>false,
@@ -248,7 +249,7 @@ class productController extends Controller
 
                     foreach($userRoleTab as $role){
 
-                        if($role->nameRole == "manager" || "store-manager"){
+                        if($role->nameRole == "manager" || "store-manager" || "admin"){
                             
                             $inventoryDrinkList = inventoryStore::where('establishment_id', $establishmnt->id)->get();
                             
@@ -266,29 +267,43 @@ class productController extends Controller
                                     }                        
                                 }
 
-                                $product = inventoryStore::create([
-                                    'quantity' => (integer) $drink['quantity'],
-                                    'price' => (double) $drink['price'],
-                                    'drink_id' => (integer) $drink['drink_id'],
-                                    'establishment_id' => $establishmnt->id,
-                                ]);
-                                historicInventoryStore::create([                        
-                                    'quantity' => (integer) $drink['quantity'],
-                                    'price' => (double) $drink['price'],
-                                    'drink_id' => (integer) $drink['drink_id'],
-                                    'establishment_id' => $establishmnt->id,
-                                    'type_operator' => 'input',
-                                    'user_id' => $request->user()->id,
-                                ]);
-                                array_push($products_created, $product);
+                                $drinks = drink::where('id', $drink['drink_id'])->first();
+
+                                if($drinks){
+                                    $product = inventoryStore::create([
+                                        'quantity' => (integer) $drink['quantity'] * $drinks->numberBottle,
+                                        'price' => (double) $drink['price'],
+                                        'drink_id' => (integer) $drink['drink_id'],
+                                        'establishment_id' => $establishmnt->id,
+                                    ]);
+                                    historicInventoryStore::create([                        
+                                        'quantity' => (integer) $drink['quantity'],
+                                        'price' => (double) $drink['price'],
+                                        'drink_id' => (integer) $drink['drink_id'],
+                                        'establishment_id' => $establishmnt->id,
+                                        'type_operator' => 'input',
+                                        'user_id' => $request->user()->id,
+                                    ]);
+                                    array_push($products_created, $product);
+                                }
                             }              
 
-                            DB::commit();
-                            return response()->json([
-                                'error'=>false,
-                                'message'=> 'Products created successfully in store', 
-                                'data'=>$products_created
-                            ], 200); 
+                            if(count($products_created) > 0){
+
+                                DB::commit();
+                                return response()->json([
+                                    'error'=>false,
+                                    'message'=> 'Products created successfully in store', 
+                                    'data'=>$products_created
+                                ], 200); 
+                            }else {
+                                DB::rollBack();
+                                return response()->json([
+                                    'error'=>false,
+                                    'message'=> 'No Product created', 
+                                    'data'=>$products_created
+                                ], 200); 
+                            }
 
                         }else {
                             return response()->json([
@@ -440,27 +455,27 @@ class productController extends Controller
 
                     foreach($userRoleTab as $role){
 
-                        if($role->nameRole == "manager" || "store-manager"){
+                        if($role->nameRole == "manager" || "store-manager" || "admin"){
                             
+
                             $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
 
                             $inventoryStoreList = inventoryStore::where('establishment_id', $establishmnt->id)
                                                     ->join('drinks', 'drinks.id', '=', 'inventory_stores.drink_id')
                                                     ->get();
                             $productsUpdated = [];
-
                             foreach ($request->drinkList as $drink) {
                                 foreach ($inventoryStoreList as $inventoryStore) {
 
                                     if($drink['drink_id'] == $inventoryStore->drink_id){
-
+                                        
                                         $isProductFound = false;
                                         foreach ($inventoryDrinkList as $inventoryDrink) {
 
                                             if( $drink['drink_id'] == $inventoryDrink->drink_id && ((integer) $inventoryStore->quantity - (integer) $drink['quantity'] >= 0)){
 
 
-                                                $inventoryDrink->quantity += ((integer) $drink['quantity'] * $inventoryStore->numberBottle);
+                                                $inventoryDrink->quantity += (integer) $drink['quantity'];
                                                 $inventoryDrink->save();
                                                 
 
@@ -472,7 +487,7 @@ class productController extends Controller
                                                 $isProductFound =true;
                                                                 
                                                 historicInventoryDrink::create([                        
-                                                    'quantity' => (integer) $drink['quantity'] * $inventoryStore->numberBottle,
+                                                    'quantity' => (integer) $drink['quantity'],
                                                     'price' => (double) $inventoryDrink->price,
                                                     'drink_id' => (integer) $inventoryDrink->drink_id,
                                                     'establishment_id' => $establishmnt->id,
@@ -495,7 +510,7 @@ class productController extends Controller
                                         if($isProductFound == false  && ((integer) $inventoryStore->quantity - (integer) $drink['quantity'] >= 0)) {
                                             
                                             $product = inventoryDrink::create([
-                                                'quantity' => (integer) $drink['quantity'] * (integer) $inventoryStore->numberBottle,
+                                                'quantity' => (integer) $drink['quantity'],
                                                 'price' => (double) $drink['price'],
                                                 'drink_id' => (integer) $drink['drink_id'],
                                                 'establishment_id' => $establishmnt->id,
@@ -508,7 +523,7 @@ class productController extends Controller
                                             ]);
                                                             
                                             historicInventoryDrink::create([                        
-                                                'quantity' => (integer) $drink['quantity'] * $inventoryStore->numberBottle,
+                                                'quantity' => (integer) $drink['quantity'],
                                                 'price' => (double) $drink['price'],
                                                 'drink_id' => (integer) $drink["drink_id"],
                                                 'establishment_id' => $establishmnt->id,

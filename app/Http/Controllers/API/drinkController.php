@@ -34,6 +34,28 @@ class drinkController extends Controller
         }
     }
 
+    //Get all product
+    public function search(Request $request) 
+    {
+        try {
+            
+            $drinks = drink::where('nameDrink', $request->drink_name)->first();
+
+            return response()->json([
+                'error'=>false,
+                'message'=> 'Data received successfully', 
+                'data'=>$drinks
+            ], 200);
+
+        } catch (Throwable $e) {
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
         
     /**
      * Store a newly created resource in storage.
