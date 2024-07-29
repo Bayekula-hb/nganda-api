@@ -135,9 +135,9 @@ Route::prefix('v1.1')->group(function () {
             Route::post("/update-password", [userController::class, 'updatePassword'])->middleware(userUpdatePasswordMiddleware::class);
         });
 
-        Route::prefix("/products")->group(function ()
+        Route::prefix("/product")->group(function ()
         {
-            Route::get("", [productController::class, 'index']);
+            Route::get("/{current_page}", [productController::class, 'index']);
             Route::get("/all", [productController::class, 'allProducts']);
             Route::post("", [productController::class, 'store'])->middleware(registerProductsMiddleware::class);
             
@@ -152,7 +152,7 @@ Route::prefix('v1.1')->group(function () {
 
         Route::prefix("/drink")->group(function ()
         {
-            Route::get("", [drinkController::class, 'index']);
+            Route::get("/{current_page}", [drinkController::class, 'index']);
             Route::post("/", [drinkController::class, 'store'])->middleware(createDrinkMiddleware::class);
             Route::put("", [drinkController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
             Route::put("/{id}", [drinkController::class, 'updateDrink'])->middleware(updatedDrinkImgMiddleware::class);

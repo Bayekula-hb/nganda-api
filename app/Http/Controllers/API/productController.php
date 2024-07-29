@@ -19,10 +19,11 @@ class productController extends Controller
 {
     //
     //Get all product
-    public function index(Request $request) 
+    public function index(Request $request, $current_page) 
     {
         try {   
-
+            
+            $current_page = $current_page > 0 ? $current_page : 1;
             $establishmnts = establishment::all();
 
             foreach ($establishmnts as $establishmnt) {
@@ -33,8 +34,7 @@ class productController extends Controller
 
                     $inventoryDrink  = inventoryDrink::where('establishment_id', $establishmnt->id)
                                             ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
-                                            ->paginate(15);
-                                            // ->get();
+                                            ->paginate(10, ['*'], 'page', $current_page);
 
                     return response()->json([
                         'error'=>false,

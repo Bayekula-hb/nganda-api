@@ -11,11 +11,13 @@ use Throwable;
 class drinkController extends Controller
 {
     //Get all product
-    public function index(Request $request) 
+    public function index(Request $request, $current_page) 
     {
+
         try {
+            $current_page = $current_page > 0 ? $current_page : 1;
             
-            $drinks = drink::all();
+            $drinks = drink::paginate(10, ['*'], 'page', $current_page);
 
             return response()->json([
                 'error'=>false,
