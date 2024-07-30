@@ -271,7 +271,7 @@ class productController extends Controller
 
                                 if($drinks){
                                     $product = inventoryStore::create([
-                                        'quantity' => (integer) $drink['quantity'] * $drinks->numberBottle,
+                                        'quantity' => (integer) $drink['quantity'],
                                         'price' => (double) $drink['price'],
                                         'drink_id' => (integer) $drink['drink_id'],
                                         'establishment_id' => $establishmnt->id,
