@@ -234,12 +234,13 @@ class productController extends Controller
             DB::beginTransaction();
 
             $establishmnts = establishment::all();
+            $user = $request->user();
+            $userId = $user->id;
 
-            foreach ($establishmnts as $establishmnt) {
-
-                $index = array_search($request->user()->id, json_decode($establishmnt->workers));
-
-                if ($index !== false) {
+            foreach ($establishmnts as $establishment) {
+                $workers = json_decode($establishment->workers); // Décode le JSON des travailleurs
+                
+                if (in_array($userId, $workers)) {
                     
                     $userRoleTab = DB::table('users')
                         ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
@@ -251,7 +252,7 @@ class productController extends Controller
 
                         if($role->nameRole == "manager" || "store-manager" || "admin"){
                             
-                            $inventoryDrinkList = inventoryStore::where('establishment_id', $establishmnt->id)->get();
+                            $inventoryDrinkList = inventoryStore::where('establishment_id', $establishment->id)->get();
                             
                             $products_created = [];
 
@@ -274,13 +275,13 @@ class productController extends Controller
                                         'quantity' => (integer) $drink['quantity'],
                                         'price' => (double) $drink['price'],
                                         'drink_id' => (integer) $drink['drink_id'],
-                                        'establishment_id' => $establishmnt->id,
+                                        'establishment_id' => $establishment->id,
                                     ]);
                                     historicInventoryStore::create([                        
                                         'quantity' => (integer) $drink['quantity'],
                                         'price' => (double) $drink['price'],
                                         'drink_id' => (integer) $drink['drink_id'],
-                                        'establishment_id' => $establishmnt->id,
+                                        'establishment_id' => $establishment->id,
                                         'type_operator' => 'input',
                                         'user_id' => $request->user()->id,
                                     ]);
@@ -312,13 +313,94 @@ class productController extends Controller
                             ], 400); 
                         }
                     }
-                }else {
-                    return response()->json([
-                        'error'=>false,
-                        'message'=> "You're not authorized to create this ressource",
-                    ], 400); 
                 }
-            }            
+            }
+            // return json_decode($establishmnts);
+            // foreach ($establishmnts as $establishmnt) {
+
+            //     $index = array_search($request->user()->id, json_decode($establishmnt->workers));
+
+            //     if ($index !== false) {
+                    
+            //         $userRoleTab = DB::table('users')
+            //             ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+            //             ->join('user_roles', 'user_roles.id', '=', 'user_role_tabs.user_role_id')
+            //             ->where('user_id',$request->user()->id)
+            //             ->get();
+
+            //         foreach($userRoleTab as $role){
+
+            //             if($role->nameRole == "manager" || "store-manager" || "admin"){
+                            
+            //                 $inventoryDrinkList = inventoryStore::where('establishment_id', $establishmnt->id)->get();
+                            
+            //                 $products_created = [];
+
+            //                 foreach ($request->drinkList as $drink) {
+            //                     foreach ($inventoryDrinkList as $inventoryDrink) {
+
+            //                         if($drink['drink_id'] == $inventoryDrink->drink_id){
+            //                             return response()->json([
+            //                                 'error'=>false,
+            //                                 'message'=> 'This product has been created, please delete it or update that', 
+            //                                 'data'=>$drink
+            //                             ], 400);
+            //                         }                        
+            //                     }
+
+            //                     $drinks = drink::where('id', $drink['drink_id'])->first();
+
+            //                     if($drinks){
+            //                         $product = inventoryStore::create([
+            //                             'quantity' => (integer) $drink['quantity'],
+            //                             'price' => (double) $drink['price'],
+            //                             'drink_id' => (integer) $drink['drink_id'],
+            //                             'establishment_id' => $establishmnt->id,
+            //                         ]);
+            //                         historicInventoryStore::create([                        
+            //                             'quantity' => (integer) $drink['quantity'],
+            //                             'price' => (double) $drink['price'],
+            //                             'drink_id' => (integer) $drink['drink_id'],
+            //                             'establishment_id' => $establishmnt->id,
+            //                             'type_operator' => 'input',
+            //                             'user_id' => $request->user()->id,
+            //                         ]);
+            //                         array_push($products_created, $product);
+            //                     }
+            //                 }              
+
+            //                 if(count($products_created) > 0){
+
+            //                     DB::commit();
+            //                     return response()->json([
+            //                         'error'=>false,
+            //                         'message'=> 'Products created successfully in store', 
+            //                         'data'=>$products_created
+            //                     ], 200); 
+            //                 }else {
+            //                     DB::rollBack();
+            //                     return response()->json([
+            //                         'error'=>false,
+            //                         'message'=> 'No Product created', 
+            //                         'data'=>$products_created
+            //                     ], 200); 
+            //                 }
+
+            //             }else {
+            //                 return response()->json([
+            //                     'error'=>false,
+            //                     'message'=> "You're not authorized to create this ressource",
+            //                 ], 400); 
+            //             }
+            //         }
+            //     }
+            //     else {
+            //         return response()->json([
+            //             'error'=>false,
+            //             'message'=> "You're not authorized to create this ressource",
+            //         ], 400); 
+            //     }
+            // }            
             return response()->json([
                 'error'=>false,
                 'message'=> "You're not authorized to create this ressource",
