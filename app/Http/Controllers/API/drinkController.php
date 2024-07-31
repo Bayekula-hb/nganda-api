@@ -17,7 +17,7 @@ class drinkController extends Controller
         try {
             $current_page = $current_page > 0 ? $current_page : 1;
             
-            $drinks = drink::paginate(10, ['*'], 'page', $current_page);
+            $drinks = drink::paginate(50, ['*'], 'page', $current_page);
 
             return response()->json([
                 'error'=>false,

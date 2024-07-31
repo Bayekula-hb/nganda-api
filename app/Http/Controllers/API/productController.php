@@ -34,7 +34,7 @@ class productController extends Controller
 
                     $inventoryDrink  = inventoryDrink::where('establishment_id', $establishmnt->id)
                                             ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
-                                            ->paginate(25, ['*'], 'page', $current_page);
+                                            ->paginate(50, ['*'], 'page', $current_page);
 
                     return response()->json([
                         'error'=>false,
@@ -109,7 +109,7 @@ class productController extends Controller
 
                             $inventoryStore  = inventoryStore::where('establishment_id', $establishmnt->id)
                                                     ->join('drinks', 'inventory_stores.drink_id', '=', 'drinks.id')
-                                                    ->paginate(25, ['*'], 'page', $current_page);
+                                                    ->paginate(50, ['*'], 'page', $current_page);
 
                             return response()->json([
                                 'error'=>false,
