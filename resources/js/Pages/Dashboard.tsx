@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { BallTriangle, FallingLines } from 'react-loader-spinner';
 
 export default function Dashboard({ auth }: PageProps) {
 
@@ -35,11 +36,24 @@ export default function Dashboard({ auth }: PageProps) {
             <Head title="Dashboard" />
 
             <div className="">
-                <div className="">
-                    <div className="bg-white p-4">
-                        <div className="p-6 text-gray-900">
-                            {isLoading ? "Loading..." 
-                            :
+                {isLoading ? (
+                    <>
+                        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                            <div className=" ">
+                            <BallTriangle
+                                height="105"
+                                width="105"
+                                color="#CA0B4A"
+                                ariaLabel="loading"
+                            />
+                            </div>{" "}
+                        </div>
+                        <div className="fixed inset-0 z-40 bg-primary"></div>
+                    </>
+                ) : (
+                    <div className="">
+                        <div className="bg-white p-4">
+                            <div className="p-6 text-gray-900">
                                 <div>
                                     {data.map((establishment, index) => {
                                         return (
@@ -52,15 +66,14 @@ export default function Dashboard({ auth }: PageProps) {
                                                     <span> Adresse</span>
                                                     <span> {establishment.address}</span>
                                                 </p>
-
                                             </div>
                                         )
                                     })}
                                 </div>
-                            }
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
         </AuthenticatedLayout>
     );
