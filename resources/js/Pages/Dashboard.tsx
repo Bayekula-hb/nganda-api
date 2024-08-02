@@ -1,8 +1,32 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export default function Dashboard({ auth }: PageProps) {
+
+    const [data, setData] = useState<Array<any>>([]);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+
+        axios.get(`/api/v1.1/admin/establishments/${currentPage}`, {
+            headers: {
+                "Authorization" : "Bearer " + localStorage.getItem("token"),
+            }
+        })        
+            .then(response => {
+                setData(response.data.data.data);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error('There was an error fetching the data!', error);
+                setIsLoading(false);
+        });
+    }, []);
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -10,10 +34,31 @@ export default function Dashboard({ auth }: PageProps) {
         >
             <Head title="Dashboard" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">You're logged in!</div>
+            <div className="">
+                <div className="">
+                    <div className="bg-white p-4">
+                        <div className="p-6 text-gray-900">
+                            {isLoading ? "Loading..." 
+                            :
+                                <div>
+                                    {data.map((establishment, index) => {
+                                        return (
+                                            <div key={index}>
+                                                <p>
+                                                    <span> Name Establishment</span>
+                                                    <span> {establishment.nameEtablishment}</span>
+                                                </p>
+                                                <p>
+                                                    <span> Adresse</span>
+                                                    <span> {establishment.address}</span>
+                                                </p>
+
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

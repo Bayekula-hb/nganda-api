@@ -6,6 +6,7 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
+import axios from 'axios';
 
 export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -14,12 +15,32 @@ export default function Login({ status, canResetPassword }: { status?: string, c
         remember: false,
     });
 
+    // const submit: FormEventHandler = (e) => {
+    //     e.preventDefault();
+
+    //     post(route('login'), {
+    //         onFinish: () => reset('password'),
+    //     });
+    // };
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        post(route('login'), {
-            onFinish: () => reset('password'),
-        });
+        axios.post('/api/v1.1/auth/login', {
+            userName: data.email,
+            password: data.password
+        })
+            .then(response => {
+                const token = response.data.data.token;
+                localStorage.setItem('token', token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                
+                post(route('login'), {
+                    onFinish: () => reset('password'),
+                });
+            })
+            .catch(error => {
+                console.error('Error logging in', error);
+            });
     };
 
     return (
@@ -69,22 +90,22 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                             checked={data.remember}
                             onChange={(e) => setData('remember', e.target.checked)}
                         />
-                        <span className="ms-2 text-sm text-gray-600">Remember me</span>
+                        <span className="ms-2 text-sm text-gray-600">Se souvenir de moi</span>
                     </label>
                 </div>
 
                 <div className="flex items-center justify-end mt-4">
-                    {canResetPassword && (
+                    {/* {canResetPassword && (
                         <Link
                             href={route('password.request')}
                             className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
                             Forgot your password?
                         </Link>
-                    )}
+                    )} */}
 
                     <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
+                        Connexion
                     </PrimaryButton>
                 </div>
             </form>

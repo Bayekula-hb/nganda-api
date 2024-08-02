@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\adminController;
 use App\Http\Controllers\API\drinkController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\productController;
@@ -25,6 +26,7 @@ use App\Http\Middleware\updateProductsStoreMiddleware;
 use App\Http\Middleware\userLoginMiddleware;
 use App\Http\Middleware\userRegisterMiddleware;
 use App\Http\Middleware\userUpdatePasswordMiddleware;
+use App\Models\establishment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -108,6 +110,7 @@ Route::prefix('v1')->group(function () {
         {
             Route::post("", [SettingsController::class, 'store']);
         });
+
     });
 });
 
@@ -185,6 +188,10 @@ Route::prefix('v1.1')->group(function () {
         Route::prefix("/settings")->group(function ()
         {
             Route::post("", [SettingsController::class, 'store']);
+        });
+
+        Route::prefix("/admin")->group(function(){
+            Route::get("/establishments/{current_page}", [adminController::class, 'index']);
         });
     });
 });
