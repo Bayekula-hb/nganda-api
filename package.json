@@ -25,7 +25,11 @@
     },
     "dependencies": {
         "@radix-ui/react-popover": "1.1.1",
+        "@tanstack/react-table": "^8.19.3",
+        "primeicons": "^7.0.0",
+        "primereact": "^10.8.0",
         "react-loader-spinner": "^6.1.6",
+        "react-router-dom": "^6.26.0",
         "swr": "^2.2.5"
     }
 }

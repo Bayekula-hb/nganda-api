@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
@@ -10,6 +10,7 @@ import { Button } from 'primereact/button';
 import { SplitButton } from 'primereact/splitbutton';
 import { Toast } from 'primereact/toast';
 import { SpeedDial } from 'primereact/speeddial';
+import { useParams } from 'react-router-dom';
 
 interface Establishemt{
     id: number;
@@ -28,12 +29,15 @@ interface Establishemt{
     user_id: number;
 }
 
-export default function Dashboard({ auth }: PageProps) {
+export default function Establishemt({ auth}: PageProps) {
 
+    const { id } = useParams();
     const [data, setData] = useState<Establishemt[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const toast = useRef<Toast>(null);
+
+    console.info(id);
 
     useEffect(() => {
 
@@ -120,9 +124,9 @@ export default function Dashboard({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Etablissement</h2>}
         >
-            <Head title="Dashboard" />
+            <Head title="Etablissement" />
 
             
             <div className="">

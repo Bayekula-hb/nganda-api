@@ -110,6 +110,12 @@ Route::prefix('v1')->group(function () {
         {
             Route::post("", [SettingsController::class, 'store']);
         });
+        
+        Route::prefix("/admin")->group(function(){
+            Route::get("/establishments/{current_page}", [adminController::class, 'index']);
+            Route::get("/establishment/{id}", [adminController::class, 'establishment']);
+            Route::get("/statistics", [adminController::class, 'statistics']);
+        });
 
     });
 });
@@ -192,6 +198,8 @@ Route::prefix('v1.1')->group(function () {
 
         Route::prefix("/admin")->group(function(){
             Route::get("/establishments/{current_page}", [adminController::class, 'index']);
+            Route::get("/establishment/{id}", [adminController::class, 'establishment']);
+            Route::get("/statistics", [adminController::class, 'statistics']);
         });
     });
 });
