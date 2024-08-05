@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\adminController;
 use App\Http\Controllers\API\drinkController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\productController;
@@ -103,6 +104,12 @@ Route::prefix('v1')->group(function () {
         Route::prefix("/settings")->group(function ()
         {
             Route::post("", [SettingsController::class, 'store']);
+        });
+
+        Route::prefix("/admin")->group(function(){
+            Route::get("/establishments/{current_page}", [adminController::class, 'index']);
+            Route::get("/establishment/{id}", [adminController::class, 'establishment']);
+            Route::get("/statistics", [adminController::class, 'statistics']);
         });
     });
 });
