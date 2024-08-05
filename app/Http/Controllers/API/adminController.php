@@ -55,7 +55,9 @@ class adminController extends Controller
                     $worker_find = User::where("id", $worker)->first();
                     array_push($workers, $worker_find);
                 }
-                $inventoryDrinks = inventoryDrink::where("establishment_id", $establishment->id)->get();
+                $inventoryDrinks = inventoryDrink::where("establishment_id", $establishment->id)
+                                                    ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
+                                                    ->get();
             }
 
             return response()->json([
