@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\drink;
 use App\Models\establishment;
+use App\Models\historicInventoryDrink;
 use App\Models\inventoryDrink;
 use App\Models\User;
 use App\Models\userRole;
@@ -116,6 +117,15 @@ class productController extends Controller
                         'drink_id' => (integer) $drink['drink_id'],
                         'establishment_id' => $establishmnt->id,
                     ]);
+                    
+                    historicInventoryDrink::create([                        
+                        'quantity' => (integer) $drink['quantity'],
+                        'price' => (double) $drink['price'],
+                        'drink_id' => (integer) $drink['drink_id'],
+                        'establishment_id' => $establishmnt->id,
+                        'type_operator' => 'input',
+                        'user_id' => $request->user()->id,
+                    ]);
                     array_push($products_created, $product);
                 }              
 
@@ -178,6 +188,15 @@ class productController extends Controller
 
                             $inventoryDrink->quantity += (integer) $drink['quantity'];
                             $inventoryDrink->save();
+
+                            historicInventoryDrink::create([                        
+                                'quantity' => (integer) (integer) $drink['quantity'],
+                                'price' => (double) $inventoryDrink->price,
+                                'drink_id' => (integer) $inventoryDrink->drink_id,
+                                'establishment_id' => $establishmnt->id,
+                                'type_operator' => 'input',
+                                'user_id' => $request->user()->id,
+                            ]);
                             
                             array_push($productsUpdated, $inventoryDrink);
 
@@ -223,6 +242,7 @@ class productController extends Controller
             DB::beginTransaction();
             $establishmnt = establishment::where('user_id',$request->user()->id)->first();
 
+
             if($establishmnt->user_id == $request->user()->id){
                 
                 $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
@@ -241,7 +261,16 @@ class productController extends Controller
                     'price' => (double) $request->price,
                     'drink_id' => (integer) $request->drink_id,
                     'establishment_id' => $establishmnt->id,
-                ]);                
+                ]); 
+
+                historicInventoryDrink::create([                        
+                    'quantity' => (integer) $request->quantity,
+                    'price' => (double) $request->price,
+                    'drink_id' => (integer) $request->drink_id,
+                    'establishment_id' => $establishmnt->id,
+                    'type_operator' => 'input',
+                    'user_id' => $request->user()->id,
+                ]);            
 
                 DB::commit();
 
