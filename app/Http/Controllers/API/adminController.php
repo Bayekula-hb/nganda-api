@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\drink;
 use App\Models\establishment;
+use App\Models\historicInventoryDrink;
 use App\Models\inventoryDrink;
 use App\Models\sale;
 use App\Models\User;
@@ -47,6 +48,8 @@ class adminController extends Controller
             $establishment = establishment::where("id", $id)->first();
             $workers = [];
             $inventoryDrinks = [];
+            $historicInventoryDrinks = [];
+            $sales = [];
 
             if($establishment) {
                 $user = User::where("id", $establishment->user_id)->first();
@@ -58,6 +61,36 @@ class adminController extends Controller
                 $inventoryDrinks = inventoryDrink::where("establishment_id", $establishment->id)
                                                     ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
                                                     ->get();
+
+                $historicInventoryDrinks = historicInventoryDrink::where("establishment_id", $establishment->id)
+                                                    ->join('drinks', 'historic_inventory_drinks.drink_id', '=', 'drinks.id')
+                                                    ->select(
+                                                        'historic_inventory_drinks.id as historic_inventory_drinks_id',
+                                                        'historic_inventory_drinks.quantity as historic_inventory_drinks_quantity',
+                                                        'historic_inventory_drinks.price as historic_inventory_drinks_price',
+                                                        'historic_inventory_drinks.created_at as historic_inventory_drinks_created_at',
+                                                        'historic_inventory_drinks.type_operator as historic_inventory_drinks_type_operator',
+                                                        'historic_inventory_drinks.type_operator as historic_inventory_drinks_type_operator',
+                                                        'drinks.id as drink_id',
+                                                        'drinks.nameDrink as nameDrink',
+                                                        'drinks.typeDrink as typeDrink',
+                                                    )
+                                                    ->get();
+                $sales = sale::where("sales.establishment_id", $establishment->id)
+                                    ->join('inventory_drinks', 'sales.inventory_drink_id', '=', 'inventory_drinks.id')
+                                    ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
+                                    ->orderBy('sales.id', 'desc')
+                                    ->select('sales.id as sale_id',
+                                             'sales.quantity as sale_quantity',
+                                             'sales.establishment_id as establishment_id',
+                                             'sales.created_at as sale_created_at',
+                                             'drinks.id as drink_id',
+                                             'drinks.nameDrink as nameDrink',
+                                             'drinks.typeDrink as typeDrink',
+                                             'inventory_drinks.id as inventory_drink_id',
+                                             'inventory_drinks.price as drinks.price',
+                                            )
+                                    ->get();                                               
             }
 
             return response()->json([
@@ -68,6 +101,8 @@ class adminController extends Controller
                     'user' => $user,
                     'workers' => $workers,
                     'inventoryDrinks' => $inventoryDrinks,
+                    'sales' => $sales,
+                    'historicInventoryDrinks' => $historicInventoryDrinks,
                 ]
             ], 200);
 
