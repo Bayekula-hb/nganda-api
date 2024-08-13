@@ -125,6 +125,38 @@ class adminController extends Controller
             $users = User::get();
             $sales = sale::get();
 
+            $saleProducts = sale::join('inventory_drinks', 'sales.inventory_drink_id', '=', 'inventory_drinks.id')
+                                    ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
+                                    ->orderBy('sales.id', 'desc')
+                                    ->select(   
+                                                'sales.id as sale_id',
+                                                'sales.quantity as sale_quantity',
+                                                'sales.establishment_id as establishment_id',
+                                                'sales.created_at as sale_created_at',
+                                                'drinks.id as drink_id',
+                                                'drinks.nameDrink as nameDrink',
+                                                'drinks.typeDrink as typeDrink',
+                                                'inventory_drinks.id as inventory_drink_id',
+                                                'inventory_drinks.price as drinks.price',
+                                            )
+                                    ->get();                                               
+            
+            $historicInventoryDrinks = historicInventoryDrink::join('drinks', 'historic_inventory_drinks.drink_id', '=', 'drinks.id')
+                            ->join('establishments', 'historic_inventory_drinks.establishment_id', '=', 'establishments.id')
+                            ->select(
+                                'historic_inventory_drinks.id as historic_inventory_drinks_id',
+                                'historic_inventory_drinks.quantity as historic_inventory_drinks_quantity',
+                                'historic_inventory_drinks.price as historic_inventory_drinks_price',
+                                'historic_inventory_drinks.created_at as historic_inventory_drinks_created_at',
+                                'historic_inventory_drinks.type_operator as historic_inventory_drinks_type_operator',
+                                'historic_inventory_drinks.type_operator as historic_inventory_drinks_type_operator',
+                                'drinks.id as drink_id',
+                                'drinks.nameDrink as nameDrink',
+                                'drinks.typeDrink as typeDrink',
+                                'establishments.nameEtablishment as nameEtablishment',
+                            )
+                            ->get();
+            
             return response()->json([
                 'error'=>false,
                 'message'=> 'Data received successfully', 
@@ -133,6 +165,8 @@ class adminController extends Controller
                     'users' => count($users),
                     'sales' => count($sales),
                     'drinks' => count($drinks),
+                    'saleProducts' => $saleProducts,
+                    'historicDrinks' => $historicInventoryDrinks,
                 ]
             ], 200);
 
