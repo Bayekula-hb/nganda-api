@@ -143,6 +143,7 @@ class adminController extends Controller
             
             $historicInventoryDrinks = historicInventoryDrink::join('drinks', 'historic_inventory_drinks.drink_id', '=', 'drinks.id')
                             ->join('establishments', 'historic_inventory_drinks.establishment_id', '=', 'establishments.id')
+                            ->orderBy('historic_inventory_drinks.id', 'desc')
                             ->select(
                                 'historic_inventory_drinks.id as historic_inventory_drinks_id',
                                 'historic_inventory_drinks.quantity as historic_inventory_drinks_quantity',
