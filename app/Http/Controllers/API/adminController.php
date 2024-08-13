@@ -127,11 +127,13 @@ class adminController extends Controller
 
             $saleProducts = sale::join('inventory_drinks', 'sales.inventory_drink_id', '=', 'inventory_drinks.id')
                                     ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
+                                    ->join('establishments', 'sales.establishment_id', '=', 'establishments.id')
                                     ->orderBy('sales.id', 'desc')
                                     ->select(   
                                                 'sales.id as sale_id',
                                                 'sales.quantity as sale_quantity',
                                                 'sales.establishment_id as establishment_id',
+                                                'establishments.nameEtablishment as nameEtablishment',
                                                 'sales.created_at as sale_created_at',
                                                 'drinks.id as drink_id',
                                                 'drinks.nameDrink as nameDrink',
