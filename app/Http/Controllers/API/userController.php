@@ -263,6 +263,47 @@ class userController extends Controller
         }
     }
 
+    public function storeAdmin(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $user = User::create([
+                'firstName' => $request->firstName,
+                'middleName' => $request->middleName,
+                'lastName' => $request->lastName,
+                'userName' => $request->userName,
+                'email' => $request->email,
+                'phoneNumber' => $request->phoneNumber,
+                'password' => Hash::make($request->password),
+                'gender' => $request->gender,
+            ]); 
+            
+            $userRole = userRole::where('nameRole', 'admin')
+                    ->first();
+
+            $userRoleTab = userRoleTab::create([
+                'user_id' => $user->id,
+                'user_role_id' => $userRole->id,
+            ]);   
+
+            DB::commit();
+
+            return response()->json([
+                'error'=>false,
+                'message'=> 'User receiver created with successfully', 
+                'data' => $user
+            ], 200); 
+     
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'error'=>true,
+                'message' => 'Request failed, please try again',
+                'data' => $th,
+            ], 400);     
+        }
+    }
+
     public function receiver(Request $request)
     {
         

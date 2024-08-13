@@ -10,6 +10,7 @@ use App\Http\Controllers\API\signController;
 use App\Http\Controllers\API\userController;
 use App\Http\Controllers\API\userRoleController;
 use App\Http\Middleware\createDrinkMiddleware;
+use App\Http\Middleware\createUserAdminMiddleware;
 use App\Http\Middleware\drinkUpdatedImgMiddleware;
 use App\Http\Middleware\paymentMiddleware;
 use App\Http\Middleware\procurementProductMiddleware;
@@ -61,6 +62,7 @@ Route::prefix('v1')->group(function () {
             Route::post("/cashier", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);
             Route::post("/banner", [userController::class, 'cashier'])->middleware(receiverRegisterMiddleware::class);
             Route::post("", [userController::class, 'store'])->middleware(userRegisterMiddleware::class);
+            Route::post("/admin", [userController::class, 'storeAdmin'])->middleware(createUserAdminMiddleware::class);
 
             Route::post("/update-password", [userController::class, 'updatePassword'])->middleware(userUpdatePasswordMiddleware::class);
         });
