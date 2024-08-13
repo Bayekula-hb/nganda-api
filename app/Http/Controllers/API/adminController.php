@@ -137,7 +137,7 @@ class adminController extends Controller
                                                 'drinks.nameDrink as nameDrink',
                                                 'drinks.typeDrink as typeDrink',
                                                 'inventory_drinks.id as inventory_drink_id',
-                                                'inventory_drinks.price as drinks.price',
+                                                'inventory_drinks.price as drink_price',
                                             )
                                     ->get();                                               
             
