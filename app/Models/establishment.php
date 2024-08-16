@@ -50,6 +50,11 @@ class establishment extends Model
         return $this->hasMany(sale::class, 'sales');
     }
 
+    public function saleStore(): HasMany
+    {
+        return $this->hasMany(saleStore::class, 'sale_stores');
+    }
+
     public function payment(): HasMany
     {
         return $this->hasMany(sale::class, 'payments');

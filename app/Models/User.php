@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->hasMany(sale::class, 'sales');
     }
 
+    public function saleStore(): HasMany
+    {
+        return $this->hasMany(saleStore::class, 'sale_stores');
+    }
+
     public function establishment(): HasMany
     {
         return $this->hasMany(establishment::class, 'establishments');

@@ -42,5 +42,10 @@ class inventoryStore extends Model
     public function establishment(): BelongsTo
     {
         return $this->belongsTo(establishment::class);
+    }
+    
+    public function saleStore(): HasMany
+    {
+        return $this->hasMany(saleStore::class, 'sale_stores');
     }    
 }

@@ -179,6 +179,13 @@ Route::prefix('v1.1')->group(function () {
             Route::post("/statistics", [saleController::class, 'statisticInIntervaleByDate'])->middleware(saleStatisticsMiddleware::class);
             Route::get("/statistics-by-date/{endDate}", [saleController::class, 'statisticEndDateWithSixPreviousDays']);
             Route::post("", [saleController::class, 'store'])->middleware(saleProductsMiddleware::class);
+
+            Route::post("/store", [saleController::class, 'saleInStore'])->middleware(saleProductsMiddleware::class);
+            Route::get("/statistics/store", [saleController::class, 'statisticsInStore']);
+            Route::get("/statistics/store/{startDate}/{endDate}", [saleController::class, 'statisticByDateInStore']);
+            Route::get("/statistics-by-date/store/{endDate}", [saleController::class, 'statisticEndDateWithSixPreviousDaysInStore']);  
+            Route::post("/statistics/store", [saleController::class, 'statisticInIntervaleByDateInStore'])->middleware(saleStatisticsMiddleware::class);
+
             // Route::put("", [saleController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
         });
 
