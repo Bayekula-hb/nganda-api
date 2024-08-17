@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\adminController;
 use App\Http\Controllers\API\drinkController;
+use App\Http\Controllers\API\historicInventoryDrinkController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\productController;
 use App\Http\Controllers\API\saleController;
@@ -118,6 +119,13 @@ Route::prefix('v1')->group(function () {
         });
 
     });
+    
+    Route::fallback(function () {
+        return response()->json([
+            'error' => true,
+            'message' => 'Route not found'
+        ], 404);
+    });
 });
 
 Route::prefix('v1.1')->group(function () {
@@ -189,6 +197,25 @@ Route::prefix('v1.1')->group(function () {
             // Route::put("", [saleController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
         });
 
+        Route::prefix("/historic")->group(function ()
+        {
+            Route::get("/warehouse", [historicInventoryDrinkController::class, 'index']);
+            Route::get("/store", [historicInventoryDrinkController::class, 'storeIndex']);
+            // Route::get("/statistics", [historicInventoryDrinkController::class, 'statistics']);
+            // Route::get("/statistics/{startDate}/{endDate}", [historicInventoryDrinkController::class, 'statisticByDate']);
+            // Route::post("/statistics", [historicInventoryDrinkController::class, 'statisticInIntervaleByDate'])->middleware(saleStatisticsMiddleware::class);
+            // Route::get("/statistics-by-date/{endDate}", [historicInventoryDrinkController::class, 'statisticEndDateWithSixPreviousDays']);
+            // Route::post("", [historicInventoryDrinkController::class, 'store'])->middleware(saleProductsMiddleware::class);
+
+            // Route::post("/store", [historicInventoryDrinkController::class, 'saleInStore'])->middleware(saleProductsMiddleware::class);
+            // Route::get("/statistics/store", [historicInventoryDrinkController::class, 'statisticsInStore']);
+            // Route::get("/statistics/store/{startDate}/{endDate}", [historicInventoryDrinkController::class, 'statisticByDateInStore']);
+            // Route::get("/statistics-by-date/store/{endDate}", [historicInventoryDrinkController::class, 'statisticEndDateWithSixPreviousDaysInStore']);  
+            // Route::post("/statistics/store", [historicInventoryDrinkController::class, 'statisticInIntervaleByDateInStore'])->middleware(saleStatisticsMiddleware::class);
+
+            // Route::put("", [saleController::class, 'update'])->middleware(drinkUpdatedImgMiddleware::class);
+        });
+
         Route::prefix("/payment")->group(function ()
         {
             // Route::get("", [drinkController::class, 'index']);
@@ -202,11 +229,16 @@ Route::prefix('v1.1')->group(function () {
         {
             Route::post("", [SettingsController::class, 'store']);
         });
-
-        Route::prefix("/admin")->group(function(){
-            Route::get("/establishments/{current_page}", [adminController::class, 'index']);
-            Route::get("/establishment/{id}", [adminController::class, 'establishment']);
-            Route::get("/statistics", [adminController::class, 'statistics']);
-        });
     });
 });
+
+Route::any('{any}', function () {
+    return response()->json([
+        'error' => true,
+        'message' => 'Route not found'
+    ], 404);
+})->where('any', '.*');
+
+Route::get('/unauthorized', function () {
+    return response()->json(['error' => 'Unauthorized access'], 401);
+})->name('unauthorized');
