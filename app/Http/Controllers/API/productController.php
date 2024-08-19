@@ -522,29 +522,34 @@ class productController extends Controller
             DB::beginTransaction();
 
             $establishmnts = establishment::all();
+            
 
             foreach ($establishmnts as $establishmnt) {
 
                 $index = array_search($request->user()->id, json_decode($establishmnt->workers));
 
+
                 if ($index !== false) {
-                    
+
                     $userRoleTab = DB::table('users')
                         ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
                         ->join('user_roles', 'user_roles.id', '=', 'user_role_tabs.user_role_id')
                         ->where('user_id',$request->user()->id)
                         ->get();
-
+                    
                     foreach($userRoleTab as $role){
 
                         if($role->nameRole == "manager" || "store-manager" || "admin"){
                             
 
                             $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
+                            
+
 
                             $inventoryStoreList = inventoryStore::where('establishment_id', $establishmnt->id)
                                                     ->join('drinks', 'drinks.id', '=', 'inventory_stores.drink_id')
-                                                    ->get();
+                                                    ->get();                            
+
                             $productsUpdated = [];
                             foreach ($request->drinkList as $drink) {
                                 foreach ($inventoryStoreList as $inventoryStore) {
@@ -555,7 +560,6 @@ class productController extends Controller
                                         foreach ($inventoryDrinkList as $inventoryDrink) {
 
                                             if( $drink['drink_id'] == $inventoryDrink->drink_id && ((integer) $inventoryStore->quantity - (integer) $drink['quantity'] >= 0)){
-
 
                                                 $inventoryDrink->quantity += (integer) $drink['quantity'];
                                                 $inventoryDrink->save();
@@ -589,41 +593,41 @@ class productController extends Controller
                                                 array_push($productsUpdated, $inventoryDrink);
                                             }
                                         } 
-                                        if($isProductFound == false  && ((integer) $inventoryStore->quantity - (integer) $drink['quantity'] >= 0)) {
+                                        // if($isProductFound == false  && ((integer) $inventoryStore->quantity - (integer) $drink['quantity'] >= 0)) {
                                             
-                                            $product = inventoryDrink::create([
-                                                'quantity' => (integer) $drink['quantity'],
-                                                'price' => (double) $drink['price'],
-                                                'drink_id' => (integer) $drink['drink_id'],
-                                                'establishment_id' => $establishmnt->id,
-                                            ]);
+                                        //     $product = inventoryDrink::create([
+                                        //         'quantity' => (integer) $drink['quantity'],
+                                        //         'price' => (double) $drink['price'],
+                                        //         'drink_id' => (integer) $drink['drink_id'],
+                                        //         'establishment_id' => $establishmnt->id,
+                                        //     ]);
                                             
                                                                                         
-                                            inventoryStore::where('id', $inventoryStore->id)
-                                            ->update([
-                                                "quantity" => (integer) $inventoryStore->quantity - (integer) $drink['quantity']
-                                            ]);
+                                        //     inventoryStore::where('id', $inventoryStore->id)
+                                        //     ->update([
+                                        //         "quantity" => (integer) $inventoryStore->quantity - (integer) $drink['quantity']
+                                        //     ]);
                                                             
-                                            historicInventoryDrink::create([                        
-                                                'quantity' => (integer) $drink['quantity'],
-                                                'price' => (double) $drink['price'],
-                                                'drink_id' => (integer) $drink["drink_id"],
-                                                'establishment_id' => $establishmnt->id,
-                                                'type_operator' => 'input',
-                                                'user_id' => $request->user()->id,
-                                            ]); 
+                                        //     historicInventoryDrink::create([                        
+                                        //         'quantity' => (integer) $drink['quantity'],
+                                        //         'price' => (double) $drink['price'],
+                                        //         'drink_id' => (integer) $drink["drink_id"],
+                                        //         'establishment_id' => $establishmnt->id,
+                                        //         'type_operator' => 'input',
+                                        //         'user_id' => $request->user()->id,
+                                        //     ]); 
 
-                                            historicInventoryStore::create([                        
-                                                'quantity' => (integer) $drink['quantity'],
-                                                'price' => (double) $inventoryStore->price,
-                                                'drink_id' => (integer) $inventoryStore->drink_id,
-                                                'establishment_id' => $establishmnt->id,
-                                                'type_operator' => 'output',
-                                                'user_id' => $request->user()->id,
-                                            ]); 
+                                        //     historicInventoryStore::create([                        
+                                        //         'quantity' => (integer) $drink['quantity'],
+                                        //         'price' => (double) $inventoryStore->price,
+                                        //         'drink_id' => (integer) $inventoryStore->drink_id,
+                                        //         'establishment_id' => $establishmnt->id,
+                                        //         'type_operator' => 'output',
+                                        //         'user_id' => $request->user()->id,
+                                        //     ]); 
 
-                                            array_push($productsUpdated, $product);
-                                        }
+                                        //     array_push($productsUpdated, $product);
+                                        // }
                                     }                   
                                 }
                             }
@@ -649,11 +653,6 @@ class productController extends Controller
                             ], 400); 
                         }
                     }
-                }else {
-                    return response()->json([
-                        'error'=>false,
-                        'message'=> "You're not authorized to create this ressource",
-                    ], 400); 
                 }
             }            
             return response()->json([

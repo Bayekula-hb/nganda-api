@@ -199,8 +199,8 @@ Route::prefix('v1.1')->group(function () {
 
         Route::prefix("/historic")->group(function ()
         {
-            Route::get("/warehouse", [historicInventoryDrinkController::class, 'index']);
-            Route::get("/store", [historicInventoryDrinkController::class, 'storeIndex']);
+            Route::get("/warehouse/{current_page}", [historicInventoryDrinkController::class, 'index']);
+            Route::get("/store/{current_page}", [historicInventoryDrinkController::class, 'storeIndex']);
             // Route::get("/statistics", [historicInventoryDrinkController::class, 'statistics']);
             // Route::get("/statistics/{startDate}/{endDate}", [historicInventoryDrinkController::class, 'statisticByDate']);
             // Route::post("/statistics", [historicInventoryDrinkController::class, 'statisticInIntervaleByDate'])->middleware(saleStatisticsMiddleware::class);

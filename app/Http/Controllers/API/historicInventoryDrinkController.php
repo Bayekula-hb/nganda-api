@@ -18,10 +18,11 @@ class historicInventoryDrinkController extends Controller
 {
     
     //Get all product
-    public function index(Request $request) 
+    public function index(Request $request, $current_page) 
     {
         try {   
 
+            $current_page = $current_page > 0 ? $current_page : 1;
             $establishmnt = establishment::where('user_id',$request->user()->id)->first();
 
             if($establishmnt){
@@ -30,7 +31,7 @@ class historicInventoryDrinkController extends Controller
                                         ->join('drinks', 'historic_inventory_drinks.drink_id', '=', 'drinks.id')
                                         ->join('users', 'historic_inventory_drinks.user_id', '=', 'users.id')
                                         ->orderBy('historic_inventory_drinks.id', 'desc')
-                                        ->get();
+                                        ->paginate(50, ['*'], 'page', $current_page);
 
                 return response()->json([
                     'error'=>false,
@@ -49,10 +50,11 @@ class historicInventoryDrinkController extends Controller
     }
     
     //Get all product
-    public function storeIndex(Request $request) 
+    public function storeIndex(Request $request, $current_page) 
     {
         try {   
 
+            $current_page = $current_page > 0 ? $current_page : 1;
             $establishmnt = establishment::where('user_id',$request->user()->id)->first();
 
             if($establishmnt){
@@ -61,7 +63,7 @@ class historicInventoryDrinkController extends Controller
                                         ->join('drinks', 'historic_inventory_stores.drink_id', '=', 'drinks.id')
                                         ->join('users', 'historic_inventory_stores.user_id', '=', 'users.id')
                                         ->orderBy('historic_inventory_stores.id', 'desc')
-                                        ->get();
+                                        ->paginate(50, ['*'], 'page', $current_page);
 
                 return response()->json([
                     'error'=>false,
