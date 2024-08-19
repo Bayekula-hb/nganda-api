@@ -702,8 +702,10 @@ class productController extends Controller
                     foreach ($inventoryDrinkList as $inventoryDrink) {
                         if($drink['drink_id'] == $inventoryDrink->drink_id){
 
-                            $inventoryDrink->quantity += (integer) $drink['quantity'];
-                            $inventoryDrink->save();
+                            $inventoryDrinkFind = inventoryDrink::find($inventoryDrink->id);
+                            $inventoryDrinkFind->quantity += (integer) $drink['quantity'];
+                            $inventoryDrinkFind->price = (integer) $drink['price'] ? (integer) $drink['price'] : $inventoryDrinkFind->price;
+                            $inventoryDrinkFind->save();
 
                             historicInventoryDrink::create([                        
                                 'quantity' => (integer) (integer) $drink['quantity'],

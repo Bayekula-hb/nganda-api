@@ -24,6 +24,7 @@ use App\Http\Middleware\searchDrinkMiddleware;
 use App\Http\Middleware\signMiddleware;
 use App\Http\Middleware\updatedDrinkImgMiddleware;
 use App\Http\Middleware\updateProductsStoreMiddleware;
+use App\Http\Middleware\userInfoMiddleware;
 use App\Http\Middleware\userLoginMiddleware;
 use App\Http\Middleware\userRegisterMiddleware;
 use App\Http\Middleware\userUpdatePasswordMiddleware;
@@ -159,14 +160,14 @@ Route::prefix('v1.1')->group(function () {
             Route::get("/{current_page}", [productController::class, 'index']);
             Route::get("/all", [productController::class, 'allProducts']);
             Route::post("", [productController::class, 'store'])->middleware(registerProductsMiddleware::class);
+            Route::post("/add", [productController::class, 'product'])->middleware(registerOneProductMiddleware::class);
+            Route::put("/procurement", [productController::class, 'procurement'])->middleware(procurementProductMiddleware::class);
             
             Route::post("/store", [productController::class, 'storeToInventoryStore'])->middleware(registerProductsMiddleware::class);
             Route::put("/store/procurement", [productController::class, 'procurementInventoryStore'])->middleware(updateProductsStoreMiddleware::class);
             Route::get("/store/{current_page}", [productController::class, 'allProductsInStore']);
             Route::put("/store/procurement/warehouse", [productController::class, 'procurementWarehouse'])->middleware(procurementProductByStoreMiddleware::class);
 
-            Route::post("/add", [productController::class, 'product'])->middleware(registerOneProductMiddleware::class);
-            Route::put("/procurement", [productController::class, 'procurement'])->middleware(procurementProductMiddleware::class);
         });
 
         Route::prefix("/drink")->group(function ()
@@ -183,6 +184,7 @@ Route::prefix('v1.1')->group(function () {
         {
             Route::get("", [saleController::class, 'index']);
             Route::get("/statistics", [saleController::class, 'statistics']);
+            Route::get("/statistics/user/{user_id}", [saleController::class, 'statisticsByUser']);
             Route::get("/statistics/{startDate}/{endDate}", [saleController::class, 'statisticByDate']);
             Route::post("/statistics", [saleController::class, 'statisticInIntervaleByDate'])->middleware(saleStatisticsMiddleware::class);
             Route::get("/statistics-by-date/{endDate}", [saleController::class, 'statisticEndDateWithSixPreviousDays']);
@@ -190,6 +192,7 @@ Route::prefix('v1.1')->group(function () {
 
             Route::post("/store", [saleController::class, 'saleInStore'])->middleware(saleProductsMiddleware::class);
             Route::get("/statistics/store", [saleController::class, 'statisticsInStore']);
+            Route::get("/statistics/store/user/{user_id}", [saleController::class, 'statisticsByUserStore']);
             Route::get("/statistics/store/{startDate}/{endDate}", [saleController::class, 'statisticByDateInStore']);
             Route::get("/statistics-by-date/store/{endDate}", [saleController::class, 'statisticEndDateWithSixPreviousDaysInStore']);  
             Route::post("/statistics/store", [saleController::class, 'statisticInIntervaleByDateInStore'])->middleware(saleStatisticsMiddleware::class);
