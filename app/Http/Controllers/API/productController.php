@@ -93,8 +93,16 @@ class productController extends Controller
             DB::beginTransaction();
             
             $establishmnt = establishment::where('user_id',$request->user()->id)->first();
+            
+            $userRoleTab = DB::table('users')
+            ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+            ->where('user_id',$request->user()->id)
+            ->first();
 
-            if($establishmnt->user_id == $request->user()->id){
+            $userRole = userRole::where('id',$userRoleTab->user_role_id)
+                ->first();
+
+            if($establishmnt && $userRole->nameRole == "manager" || "barman"){
                 
                 $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
                 
@@ -241,9 +249,16 @@ class productController extends Controller
                 
             DB::beginTransaction();
             $establishmnt = establishment::where('user_id',$request->user()->id)->first();
+            
+            $userRoleTab = DB::table('users')
+            ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
+            ->where('user_id',$request->user()->id)
+            ->first();
 
+            $userRole = userRole::where('id',$userRoleTab->user_role_id)
+                ->first();
 
-            if($establishmnt->user_id == $request->user()->id){
+            if($establishmnt && $userRole->nameRole == "manager" || "barman"){
                 
                 $inventoryDrinkList = inventoryDrink::where('establishment_id', $establishmnt->id)->get();
                 
