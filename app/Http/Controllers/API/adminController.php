@@ -10,6 +10,7 @@ use App\Models\inventoryDrink;
 use App\Models\sale;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class adminController extends Controller
@@ -80,17 +81,25 @@ class adminController extends Controller
                                     ->join('inventory_drinks', 'sales.inventory_drink_id', '=', 'inventory_drinks.id')
                                     ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
                                     ->orderBy('sales.id', 'desc')
-                                    ->select('sales.id as sale_id',
-                                             'sales.quantity as sale_quantity',
-                                             'sales.establishment_id as establishment_id',
-                                             'sales.created_at as sale_created_at',
-                                             'drinks.id as drink_id',
-                                             'drinks.nameDrink as nameDrink',
-                                             'drinks.typeDrink as typeDrink',
-                                             'inventory_drinks.id as inventory_drink_id',
-                                             'inventory_drinks.price as drink_price',
-                                            )
-                                    ->get();                                               
+                                    ->select(
+                                        'sales.id as sale_id',
+                                        'sales.quantity as sale_quantity',
+                                        'sales.establishment_id as establishment_id',
+                                        'sales.created_at as sale_created_at',
+                                        'drinks.id as drink_id',
+                                        'drinks.nameDrink as nameDrink',
+                                        'drinks.typeDrink as typeDrink',
+                                        'inventory_drinks.id as inventory_drink_id',
+                                        'inventory_drinks.price as drink_price',
+                                        DB::raw('sales.quantity * inventory_drinks.price as total_amount_sold')
+                                    )
+                ->get();
+
+                $totalAmountSold = sale::where("sales.establishment_id", $establishment->id)
+                            ->join('inventory_drinks', 'sales.inventory_drink_id', '=', 'inventory_drinks.id')
+                            ->join('drinks', 'inventory_drinks.drink_id', '=', 'drinks.id')
+                ->sum(DB::raw('sales.quantity * inventory_drinks.price'));
+                                                                        
             }
 
             return response()->json([
@@ -102,6 +111,7 @@ class adminController extends Controller
                     'workers' => $workers,
                     'inventoryDrinks' => $inventoryDrinks,
                     'sales' => $sales,
+                    'totalAmountSold' => $totalAmountSold,
                     'historicInventoryDrinks' => $historicInventoryDrinks,
                 ]
             ], 200);

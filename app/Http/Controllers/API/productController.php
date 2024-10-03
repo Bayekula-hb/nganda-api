@@ -96,10 +96,10 @@ class productController extends Controller
             
             $userRoleTab = DB::table('users')
             ->join('user_role_tabs', 'users.id', '=', 'user_role_tabs.user_id')
-            ->where('user_id',$request->user()->id)
+            ->where('user_id', $request->user()->id)
             ->first();
 
-            $userRole = userRole::where('id',$userRoleTab->user_role_id)
+            $userRole = userRole::where('id', $userRoleTab->user_role_id)
                 ->first();
 
             if($establishmnt && $userRole->nameRole == "manager" || "barman"){
